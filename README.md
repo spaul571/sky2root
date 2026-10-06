@@ -8,7 +8,9 @@ Farmers get about forty seasons in a lifetime, and shifting rains, heat at flowe
 
 ## Run it
 
-Open `prototype/index.html` in Chrome or Edge. No install or server is needed, and it works offline.
+**Live prototype:** https://spaul571.github.io/sky2root/
+
+Or open `prototype/index.html` in Chrome or Edge. No install or server is needed, and it works offline.
 
 The prototype has seven screens: Field, NASA data, Simulate (one season, day by day), Replay (all 80 seasons since 1985, past climate or a 2050 what-if), Rank, Monitor (real satellite greenness for one field) and District (a view for extension agents). The interface switches between English, Español, Français, Kiswahili, हिन्दी, বাংলা and Português. Details are in [`prototype/README.md`](prototype/README.md).
 
