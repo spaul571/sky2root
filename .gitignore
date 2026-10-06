@@ -1,0 +1,16 @@
+# Only the prototype's source code goes on GitHub.
+
+# Pitch materials (video, script, graphics) stay local
+presentation/
+
+# Original team photos and personal notes
+/*.png
+/*.jpg
+/*.jpeg
+/*.txt
+
+# Build helpers and scratch output
+prototype/dev/
+__pycache__/
+*.pyc
+.venv/

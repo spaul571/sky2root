@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sky2Root Prototype</title>
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="7" r="5" fill="#4c9be8"/>
+        <path d="M24 13 V25" stroke="#4c9be8" stroke-width="2.4" stroke-dasharray="2.5 2.5"/>
+        <path d="M24 25 C 18 22 15 17 16 13 C 21 14 24 19 24 25 Z" fill="#3fae76"/>
+        <path d="M24 25 C 29 21 33 18 34 13 C 28 13 25 18 24 25 Z" fill="#6cc797"/>
+        <path d="M8 26 H40" stroke="#7a5233" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M24 26 V36 M24 31 L18 38 M24 33 L30 41 M24 36 L21 44 M18 38 L14 40 M30 41 L34 42" stroke="#a8794f" stroke-width="2" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span class="name">Sky2Root</span>
+      <span class="tag" data-i18n="tag">Concept prototype · illustrative data</span>
+    </div>
+    <div class="top-right">
+      <span class="offline"><span class="dot"></span><span data-i18n="offline">Works offline</span></span>
+      <label class="lang">
+        <span class="sr">Language</span>
+        <select id="lang"></select>
+      </label>
+    </div>
+  </header>
+
+  <nav class="side" aria-label="Screens">
+    <button data-screen="field"><span class="ico">⌖</span><span data-i18n="field">Field</span></button>
+    <button data-screen="data"><span class="ico">◫</span><span data-i18n="data">NASA data</span></button>
+    <button data-screen="simulate"><span class="ico">☀</span><span data-i18n="simulate">Simulate</span></button>
+    <button data-screen="replay"><span class="ico">▦</span><span data-i18n="replay">Replay</span></button>
+    <button data-screen="rank"><span class="ico">≡</span><span data-i18n="rank">Rank</span></button>
+    <button data-screen="monitor"><span class="ico">∿</span><span data-i18n="monitor">Monitor</span></button>
+    <button data-screen="district"><span class="ico">⌂</span><span data-i18n="district">District</span></button>
+    <p class="side-note">Example farm with two rainy seasons a year, 1985–2024. Satellite images and the field greenness curve are real NASA data; season results are illustrative.</p>
+  </nav>
+
+  <main id="main">
+    <!-- 1. Field -->
+    <section class="screen" id="screen-field">
+      <div class="screen-head">
+        <h1 data-i18n="yourField">Your field</h1>
+        <p>Tap the satellite map to place your field. Soil comes from global soil maps; you can correct it with your own soil test.</p>
+      </div>
+      <div class="cols">
+        <div class="card map-card">
+          <div class="map" id="field-map">
+            <img src="assets/img/truecolor.jpg" alt="MODIS true-colour satellite image of farmland near Sorriso, Mato Grosso, Brazil">
+            <svg class="map-overlay" id="field-overlay" viewBox="0 0 1000 1000" preserveAspectRatio="none"></svg>
+          </div>
+          <p class="caption">MODIS Terra true colour, 8 July 2023, via NASA GIBS. Area: 13.5–11.5° S, 56.5–54.5° W.</p>
+        </div>
+        <div class="card">
+          <h2 id="field-title">Field 1</h2>
+          <dl class="facts" id="field-facts"></dl>
+          <div class="row">
+            <span class="label">Water</span>
+            <div class="seg" id="water-seg">
+              <button data-water="rainfed" aria-pressed="true">Rainfed</button>
+              <button data-water="irrigated" aria-pressed="false">Irrigated</button>
+            </div>
+          </div>
+          <div class="row">
+            <label class="label" for="current-rot">Growing now</label>
+            <select id="current-rot"></select>
+          </div>
+          <h3 data-i18n="matters">What matters</h3>
+          <div class="sliders" id="sliders"></div>
+          <button class="primary" id="go-replay">Test rotations →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. NASA data -->
+    <section class="screen" id="screen-data">
+      <div class="screen-head">
+        <h1 data-i18n="data">NASA data</h1>
+        <p>Every layer below is a real NASA image of the same area. Turn layers on and off to see what Sky2Root reads for your field.</p>
+      </div>
+      <div class="cols">
+        <div class="card map-card">
+          <div class="map" id="data-map">
+            <img src="assets/img/truecolor.jpg" alt="True-colour base map">
+          </div>
+          <p class="caption" id="data-caption"></p>
+        </div>
+        <div class="card">
+          <h2>Layers</h2>
+          <div id="layer-list"></div>
+          <h3>Also used</h3>
+          <ul class="also">
+            <li><b>NEX-GDDP-CMIP6</b> · downscaled climate projections to 2100, 0.25°, for the 2050 stress test</li>
+            <li><b>GRACE-FO</b> · regional water-storage trend, to flag thirsty rotations</li>
+            <li><b>NASADEM</b> · 30 m elevation, for slope and erosion</li>
+            <li><b>HLS</b> · 30 m Landsat and Sentinel-2 imagery, for field-scale greenness</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Simulate -->
+    <section class="screen" id="screen-simulate">
+      <div class="screen-head">
+        <h1 data-i18n="simulate">Simulate</h1>
+        <p>One season, day by day. Sowing waits for the first good rain; then rain fills the soil, the crop drinks it down, and heat at flowering is counted.</p>
+      </div>
+      <div class="toolbar">
+        <div class="seg" id="sim-rots"></div>
+        <label class="inline">Season <select id="sim-season"></select></label>
+        <div class="seg" id="sim-period"></div>
+      </div>
+      <div class="card sim-card">
+        <div id="sim-view"></div>
+        <div class="player">
+          <button class="primary" id="sim-play">Play</button>
+          <input id="sim-day" type="range" min="0" max="120" step="0.1" value="0" aria-label="Day of the season">
+          <div class="seg" id="sim-speed"></div>
+        </div>
+        <div class="sim-summary" id="sim-summary"></div>
+      </div>
+    </section>
+
+    <!-- 4. Replay -->
+    <section class="screen" id="screen-replay">
+      <div class="screen-head">
+        <h1 data-i18n="replay">Replay</h1>
+        <p>The same simulation, run for every season since 1985. Click any season to watch it day by day.</p>
+      </div>
+      <div class="toolbar">
+        <div class="seg" id="rep-rots"></div>
+        <div class="seg" id="rep-period"></div>
+      </div>
+      <div class="card">
+        <div class="stats" id="rep-stats"></div>
+        <div class="scroll"><svg id="rep-card" viewBox="0 0 1100 260"></svg></div>
+        <div class="legend">
+          <span><i class="sw good"></i>Good</span><span><i class="sw warn">•</i>Stressed</span><span><i class="sw fail">×</i>Failed</span>
+          <span class="muted">Grey bars: season rain and heat compared with normal (illustrative).</span>
+        </div>
+      </div>
+      <div class="card">
+        <h2>All four rotations</h2>
+        <table class="table" id="rep-table"></table>
+      </div>
+    </section>
+
+    <!-- 5. Rank -->
+    <section class="screen" id="screen-rank">
+      <div class="screen-head">
+        <h1 data-i18n="rank">Rank</h1>
+        <p>Your priorities set the order. Every option shows how often it failed, its harvest, its water need and what it does to the soil.</p>
+      </div>
+      <div class="cols">
+        <div class="card">
+          <div class="row between"><h2 data-i18n="matters">What matters</h2><div class="seg" id="rank-period"></div></div>
+          <div class="sliders" id="rank-sliders"></div>
+          <ol class="ranking" id="ranking"></ol>
+        </div>
+        <div class="card">
+          <h2>Reliability against soil health</h2>
+          <svg id="scatter" viewBox="0 0 420 320"></svg>
+          <div class="why" id="why"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Monitor -->
+    <section class="screen" id="screen-monitor">
+      <div class="screen-head">
+        <h1 data-i18n="monitor">Monitor</h1>
+        <p>After planting, satellites keep watching. This greenness curve is real MODIS data for one field near Sorriso, Brazil: soy, then maize, then a bare dry season every year.</p>
+      </div>
+      <div class="card">
+        <svg id="ndvi" viewBox="0 0 1100 340"></svg>
+        <p class="caption" id="ndvi-caption"></p>
+      </div>
+      <div class="cols">
+        <div class="card"><h2>Bare-soil days per year</h2><div id="bare-bars"></div></div>
+        <div class="card"><h2>What this tells the farmer</h2><div id="monitor-notes"></div></div>
+      </div>
+    </section>
+
+    <!-- 7. District -->
+    <section class="screen" id="screen-district">
+      <div class="screen-head">
+        <h1 data-i18n="district">District</h1>
+        <p>For extension agents and co-ops: every farm in a district, with its recommended rotation and what still needs a visit.</p>
+      </div>
+      <div class="cols">
+        <div class="card map-card">
+          <div class="map" id="district-map">
+            <img src="assets/img/truecolor.jpg" alt="Satellite base map of the district">
+            <svg class="map-overlay" id="district-overlay" viewBox="0 0 1000 1000" preserveAspectRatio="none"></svg>
+          </div>
+        </div>
+        <div class="card">
+          <h2>District summary</h2>
+          <div class="stats" id="district-stats"></div>
+          <div id="district-legend" class="legend"></div>
+          <div id="farm-card" class="farm-card"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="tip" id="tip" hidden></div>
+
+  <script src="data/ndvi-field.js"></script>
+  <script src="js/model.js"></script>
+  <script src="js/season-view.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
