@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sky2Root: project demo, Team Groot, NASA Space Apps Challenge 2026</title>
+<meta name="description" content="Seven-slide project demo of Sky2Root. Drafted with help from an SI assistant (Claude Code); every screen shown is the working app.">
+<!-- Seven slides of 1920 x 1080. tools/render_slides.py prints them to Sky2Root-demo-slides.pdf. Numbers come from the app (Bogura example, default priorities). -->
+<style>
+@font-face { font-family: "Archivo"; src: url("../app/css/archivo-latin.woff2") format("woff2"); font-weight: 600 800; font-stretch: 100% 125%; }
+@page { size: 1920px 1080px; margin: 0; }
+:root {
+  --ink: #14201a; --ink-2: #48554d; --muted: #5f6b63; --line: #dfe5dc; --bg: #f4f6f1; --card: #ffffff;
+  --accent: #12694a; --accent-2: #0d5539; --soft: #e3f1e9; --sky: #2a78d6; --soil: #a8794f;
+  --good: #0d7a40; --warn: #8a5a00; --fail: #b02f2a;
+  --display: "Archivo", "Segoe UI", system-ui, sans-serif; --body: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: #c9d1c6; }
+body { font-family: var(--body); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.slide { width: 1920px; height: 1080px; position: relative; overflow: hidden; background: var(--bg); padding: 72px 96px 0; break-after: page; }
+@media screen { .slide { zoom: var(--z, 1); margin: 0 auto 24px; box-shadow: 0 8px 40px rgba(0,0,0,.18); } }
+.kicker { font-family: var(--display); font-weight: 700; font-size: 26px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--display); font-weight: 800; font-size: 76px; line-height: 1.04; letter-spacing: -.015em; margin-top: 14px; }
+h2 { font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1.15; }
+p, li { font-size: 30px; line-height: 1.38; }
+.muted { color: var(--muted); }
+.foot { position: absolute; left: 96px; right: 96px; bottom: 30px; display: flex; justify-content: space-between; font-size: 20px; color: var(--muted); }
+.dark .foot { color: rgba(255,255,255,.75); }
+.card { background: var(--card); border-radius: 26px; box-shadow: 0 1px 2px rgba(20,32,26,.06), 0 10px 30px rgba(20,32,26,.08); }
+.phone { width: 300px; border: 11px solid #14201a; border-radius: 50px; overflow: hidden; background: #fff; box-shadow: 0 18px 50px rgba(20,32,26,.28); }
+.phone img { display: block; width: 100%; }
+.laptop { border-radius: 18px; overflow: hidden; background: #fff; box-shadow: 0 24px 60px rgba(20,32,26,.30); border: 1px solid rgba(20,32,26,.12); }
+.laptop .bar { height: 34px; background: #e9ece6; display: flex; gap: 9px; align-items: center; padding-left: 16px; }
+.laptop .bar i { width: 12px; height: 12px; border-radius: 50%; background: #c5cfc3; }
+.laptop img { display: block; width: 100%; }
+.chip { display: inline-block; padding: 10px 22px; border-radius: 999px; background: var(--soft); color: var(--accent-2); font-weight: 600; font-size: 26px; }
+.mark { width: 92px; height: 92px; }
+
+/* 1 title */
+.s1 { background: linear-gradient(135deg, #0b4a32 0%, #12694a 60%, #1c7d58 100%); color: #fff; padding-top: 110px; }
+.s1 .brand { display: flex; align-items: center; gap: 22px; }
+.s1 .brand b { font-family: var(--display); font-weight: 800; font-size: 120px; letter-spacing: -.02em; line-height: 1; }
+.s1 .tag { font-family: var(--display); font-weight: 700; font-size: 52px; line-height: 1.15; margin-top: 40px; width: 860px; }
+.s1 .team { margin-top: 56px; font-size: 32px; line-height: 1.5; width: 820px; }
+.s1 .team b { font-weight: 700; }
+.s1 .links { margin-top: 40px; font-size: 26px; line-height: 1.6; color: rgba(255,255,255,.9); }
+.s1 .laptop { position: absolute; right: -40px; top: 150px; width: 1000px; }
+.s1 .phone { position: absolute; right: 700px; top: 470px; width: 270px; }
+
+/* 2 problem */
+.s2 .row { display: flex; gap: 32px; margin-top: 44px; }
+.s2 .card { flex: 1; padding: 30px 34px; }
+.s2 .card h2 { display: flex; align-items: center; gap: 14px; }
+.s2 .card svg { width: 46px; height: 46px; flex: none; }
+.s2 .card p { margin-top: 12px; color: var(--ink-2); font-size: 28px; }
+.s2 .strip { margin-top: 36px; padding: 22px 26px 18px; }
+.s2 .strip .months { display: flex; gap: 10px; }
+.s2 .strip .months img { width: calc((100% - 80px) / 9); display: block; }
+.s2 .strip p { font-size: 22px; color: var(--muted); margin-top: 12px; }
+.s2 .bottom { margin-top: 28px; font-size: 31px; width: 1700px; }
+
+/* 3 how */
+.s3 .phones { display: flex; justify-content: space-between; margin-top: 46px; }
+.s3 figure { width: 330px; position: relative; display: flex; flex-direction: column; align-items: center; }
+.s3 figcaption { margin-top: 18px; text-align: center; }
+.s3 figcaption b { display: block; font-family: var(--display); font-size: 27px; font-weight: 800; }
+.s3 figcaption span { font-size: 23px; color: var(--muted); line-height: 1.3; display: block; margin-top: 4px; }
+.s3 .phone { width: 262px; height: 567px; }
+.s3 .num { position: absolute; top: -18px; left: 8px; width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: #fff; font-family: var(--display); font-weight: 800; font-size: 28px; display: grid; place-items: center; z-index: 2; box-shadow: 0 4px 12px rgba(0,0,0,.25); }
+.s3 .arrow { align-self: center; margin-top: -120px; color: var(--accent); font-size: 54px; font-weight: 800; }
+.s3 .chips { display: flex; gap: 14px; margin-top: 24px; }
+
+/* 4 inside */
+.s4 .cols { display: grid; grid-template-columns: 1.25fr 64px 1fr 64px 1fr; margin-top: 40px; align-items: stretch; }
+.s4 .col { padding: 28px 30px; }
+.s4 .col h2 { font-size: 32px; display: flex; gap: 12px; align-items: center; }
+.s4 .col h2 small { font-family: var(--body); font-weight: 600; font-size: 22px; color: var(--muted); }
+.s4 .col ul { list-style: none; margin-top: 14px; }
+.s4 .col li { font-size: 23px; line-height: 1.32; padding: 9px 0; border-top: 1px solid var(--line); }
+.s4 .col li:first-child { border-top: 0; }
+.s4 .col li b { color: var(--ink); }
+.s4 .col li span { color: var(--ink-2); }
+.s4 .sky { border-top: 10px solid var(--sky); }
+.s4 .sim { border-top: 10px solid var(--accent); }
+.s4 .root { border-top: 10px solid var(--soil); }
+.s4 .to { align-self: center; text-align: center; font-size: 58px; color: var(--accent); font-weight: 800; }
+.s4 .grid-note { margin-top: 26px; font-size: 26px; color: var(--ink-2); }
+.s4 .also { margin-top: 12px; font-size: 22px; color: var(--muted); }
+
+/* 5 result */
+.s5 table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 30px; font-size: 26px; }
+.s5 th, .s5 td { padding: 13px 20px; text-align: left; vertical-align: top; }
+.s5 thead th { font-family: var(--display); font-size: 25px; line-height: 1.2; font-weight: 800; padding-bottom: 16px; }
+.s5 thead th small { display: block; font-family: var(--body); font-weight: 600; font-size: 19px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.s5 thead th:not(:first-child) { background: #fff; border-radius: 20px 20px 0 0; }
+.s5 thead th.small { background: var(--soft); }
+.s5 tbody td:not(:first-child) { background: #fff; font-weight: 700; font-size: 30px; }
+.s5 tbody td.small { background: var(--soft); }
+.s5 tbody tr:last-child td:not(:first-child) { border-radius: 0 0 20px 20px; }
+.s5 tbody td:first-child { color: var(--ink-2); font-size: 24px; width: 470px; }
+.s5 td small { font-weight: 500; font-size: 20px; color: var(--muted); }
+.s5 .bad { color: var(--fail); } .s5 .ok { color: var(--good); }
+.s5 .each { margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; font-size: 24px; }
+.s5 .each .chip { font-size: 22px; padding: 8px 18px; }
+.s5 .note { margin-top: 14px; font-size: 19px; color: var(--muted); line-height: 1.35; }
+.s5 td.gap { width: 18px; padding: 0; background: transparent !important; }
+
+/* 6 trust */
+.s6 .grid { display: grid; grid-template-columns: 760px 1fr; gap: 48px; margin-top: 36px; }
+.s6 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.s6 .stat { padding: 24px 26px; }
+.s6 .stat b { display: block; font-family: var(--display); font-weight: 800; font-size: 60px; color: var(--accent); line-height: 1; }
+.s6 .stat span { display: block; font-size: 22px; line-height: 1.3; margin-top: 10px; color: var(--ink-2); }
+.s6 .honest { margin-top: 24px; font-size: 24px; line-height: 1.38; color: var(--ink-2); }
+.s6 .laptop { width: 100%; }
+.s6 .laptop img { height: 590px; object-fit: cover; object-position: left top; }
+.s6 .quote { margin-top: 22px; font-family: var(--display); font-weight: 700; font-size: 30px; color: var(--accent-2); }
+
+/* 7 team */
+.s7 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 34px; }
+.s7 .people { list-style: none; }
+.s7 .people li { padding: 16px 0; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 20px; font-size: 30px; }
+.s7 .people li:first-child { border-top: 0; }
+.s7 .people b { font-weight: 700; }
+.s7 .people span { color: var(--muted); text-align: right; }
+.s7 ul.next { margin-top: 14px; padding-left: 32px; }
+.s7 ul.next li { font-size: 26px; line-height: 1.36; padding: 6px 0; color: var(--ink-2); }
+.s7 .links { margin-top: 36px; padding: 26px 32px; display: grid; grid-template-columns: 200px 1fr; row-gap: 8px; font-size: 26px; }
+.s7 .links b { font-family: var(--display); font-weight: 800; }
+.s7 .links a { color: var(--accent-2); text-decoration: none; }
+.s7 .si { margin-top: 20px; font-size: 20px; color: var(--muted); line-height: 1.4; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 48 48">
+    <circle cx="24" cy="7" r="5" fill="#4c9be8"/>
+    <path d="M24 13 V25" stroke="#4c9be8" stroke-width="2.4" stroke-dasharray="2.5 2.5"/>
+    <path d="M24 25 C 18 22 15 17 16 13 C 21 14 24 19 24 25 Z" fill="#3fae76"/>
+    <path d="M24 25 C 29 21 33 18 34 13 C 28 13 25 18 24 25 Z" fill="#6cc797"/>
+    <path d="M8 26 H40" stroke="#7a5233" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M24 26 V36 M24 31 L18 38 M24 33 L30 41 M24 36 L21 44 M18 38 L14 40 M30 41 L34 42" stroke="#a8794f" stroke-width="2" stroke-linecap="round" fill="none"/>
+  </symbol>
+</svg>
+
+<!-- 1. Title -->
+<section class="slide s1 dark">
+  <div class="brand"><svg class="mark" style="width:120px;height:120px"><use href="#logo"/></svg><b>Sky2Root</b></div>
+  <p class="tag">Test-drive your next crop rotation on 40 years of NASA data, before you plant.</p>
+  <p class="team"><b>Team Groot</b> · NASA Space Apps Challenge 2026<br>Challenge:<br><b>Field Shift: Adapting Farms with NASA Data</b></p>
+  <p class="links">Try it: spaul571.github.io/sky2root<br>Code: github.com/spaul571/sky2root</p>
+  <div class="laptop"><div class="bar"><i></i><i></i><i></i></div><img src="shots/laptop-rank.png" alt="Sky2Root's Best plan screen on a laptop"></div>
+  <div class="phone"><img src="shots/phone-rank.png" alt="The same screen on a phone"></div>
+  <div class="foot"><span>Every screen in these slides is the working app.</span><span>1 / 7</span></div>
+</section>
+
+<!-- 2. The problem -->
+<section class="slide s2">
+  <div class="kicker">The problem</div>
+  <h1>A farmer gets about 40 seasons in a lifetime.<br>The climate is changing the rules.</h1>
+  <div class="row">
+    <div class="card"><h2><svg viewBox="0 0 24 24" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"><path d="M7 15a4 4 0 0 1 .5-8A5.5 5.5 0 0 1 18 8.5 3.5 3.5 0 0 1 17.5 15H7z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/></svg>Rain shifts</h2><p>Late starts, long dry spells and floods break a calendar that worked for decades.</p></div>
+    <div class="card"><h2><svg viewBox="0 0 24 24" fill="none" stroke="#d0403b" stroke-width="2" stroke-linecap="round"><path d="M10 13.5V5a2 2 0 1 1 4 0v8.5a4 4 0 1 1-4 0z"/><path d="M12 9v6"/></svg>Heat at flowering</h2><p>A few hot days at the wrong moment can empty a harvest.</p></div>
+    <div class="card"><h2><svg viewBox="0 0 24 24" fill="none" stroke="#a8794f" stroke-width="2" stroke-linecap="round"><path d="M3 15h18M6 19h12"/><path d="M12 15V7M12 10c-2-1-3-3-3-5 2 0 3 2 3 5zM12 10c2-1 3-3 3-5-2 0-3 2-3 5z"/></svg>Tired soil</h2><p>Months of bare ground after harvest wash away in heavy rain.</p></div>
+  </div>
+  <div class="card strip" role="img" aria-label="Monthly true-colour views of a field in Bogura, Bangladesh, from NASA HLS">
+    <div class="months"><img src="shots/strip-1.png" alt=""><img src="shots/strip-2.png" alt=""><img src="shots/strip-3.png" alt=""><img src="shots/strip-4.png" alt=""><img src="shots/strip-5.png" alt=""><img src="shots/strip-6.png" alt=""><img src="shots/strip-7.png" alt=""><img src="shots/strip-8.png" alt=""><img src="shots/strip-9.png" alt=""></div>
+    <p>A real field in Bogura, Bangladesh, month by month from space (NASA HLS: Landsat and Sentinel-2, through NASA GIBS). Green is growing crop; pale brown is bare soil.</p>
+  </div>
+  <p class="bottom">NASA measures rain, heat, soil moisture and greenness for every field on Earth, but as satellite files, not answers. <b>Sky2Root turns them into a crop plan, for farmers and the advisers who serve them.</b></p>
+  <div class="foot"><span>Sky2Root · Team Groot · NASA Space Apps Challenge 2026</span><span>2 / 7</span></div>
+</section>
+
+<!-- 3. How it works -->
+<section class="slide s3">
+  <div class="kicker">How it works</div>
+  <h1>Three questions. One answer.</h1>
+  <div class="chips"><span class="chip">About 10 seconds for a new field</span><span class="chip">Free, no login</span><span class="chip">Works offline once opened</span><span class="chip">7 languages, incl. Bangla, Hindi, Kiswahili</span></div>
+  <div class="phones">
+    <figure><span class="num">1</span><div class="phone"><img src="shots/phone-step1.png" alt="Step 1: where is your field"></div><figcaption><b>Where is your field?</b><span>Search, or tap the map. Any field on Earth.</span></figcaption></figure>
+    <span class="arrow">›</span>
+    <figure><span class="num">2</span><div class="phone"><img src="shots/phone-step2.png" alt="Step 2: what do you grow now"></div><figcaption><b>What do you grow now?</b><span>Crops by photo; water and floods.</span></figcaption></figure>
+    <span class="arrow">›</span>
+    <figure><span class="num">3</span><div class="phone"><img src="shots/phone-step3.png" alt="Step 3: what matters most"></div><figcaption><b>What matters most?</b><span>A sure harvest, money, water, soil, feed.</span></figcaption></figure>
+    <span class="arrow">›</span>
+    <figure><span class="num">✓</span><div class="phone"><img src="shots/phone-rank.png" alt="The answer: your best crop plan"></div><figcaption><b>Your best crop plan</b><span>Compared with what you grow now.</span></figcaption></figure>
+  </div>
+  <div class="foot"><span>Sky2Root · Team Groot · NASA Space Apps Challenge 2026</span><span>3 / 7</span></div>
+</section>
+
+<!-- 4. Inside -->
+<section class="slide s4">
+  <div class="kicker">From the sky to the root</div>
+  <h1>Every season since 1985, replayed day by day</h1>
+  <div class="cols">
+    <div class="card col sky"><h2>Sky <small>NASA data for any point</small></h2><ul>
+      <li><b>NASA POWER</b> <span>daily heat, humidity, wind, sun since 1984</span></li>
+      <li><b>GPM IMERG</b> <span>daily rain since 1998</span></li>
+      <li><b>NEX-GDDP-CMIP6</b> <span>2041-2060 from 5 climate models, 2 scenarios</span></li>
+      <li><b>SMAP L4</b> <span>root-zone soil moisture, an independent check</span></li>
+      <li><b>HLS (Landsat, Sentinel-2), MODIS</b> <span>greenness at 30 m, bare-soil days, burned land, water use check</span></li>
+      <li><b>GRACE/GRACE-FO, SRTM</b> <span>water-storage trend, slope for erosion</span></li>
+    </ul></div>
+    <div class="to">→</div>
+    <div class="card col sim"><h2>Simulate <small>each rotation</small></h2><ul>
+      <li><b>FAO-56 water balance</b> <span>rain fills the soil, the crop drinks it, day by day</span></li>
+      <li><b>Crop calendars</b> <span>sowing windows, heat at flowering, waterlogging, frost</span></li>
+      <li><b>Yield response</b> <span>FAO-33 and AquaCrop stress curves</span></li>
+      <li><b>Soil health</b> <span>living-root days, legumes, crop variety, erosion</span></li>
+      <li><b>Hotter 2050</b> <span>the same seasons, shifted by each model</span></li>
+    </ul></div>
+    <div class="to">→</div>
+    <div class="card col root"><h2>Root <small>ranked for you</small></h2><ul>
+      <li><b>Your priorities</b> <span>a sure harvest, food, money, water, soil, feed</span></li>
+      <li><b>At least three plans</b> <span>the best match, a small change, and what you grow now</span></li>
+      <li><b>For each</b> <span>why it came up, the evidence, benefits, what is unknown, what to check locally</span></li>
+      <li><b>El Niño now</b> <span>how each plan did in past El Niño and La Niña years</span></li>
+      <li><b>Plain words</b> <span>in 7 languages, with every number traceable to its source</span></li>
+    </ul></div>
+  </div>
+  <p class="grid-note"><b>Different grids, one field:</b> weather about 50 km, rain 10 km, soil 250 m, greenness 30 m, joined into one daily record for the point you mark.</p>
+  <p class="also">Also: ISRIC SoilGrids 2.0 (soil), FAOSTAT (crops, yields and prices by country), NOAA Oceanic Niño Index, JRC Global Surface Water. Methods: docs/METHODS.md.</p>
+  <div class="foot"><span>Sky2Root · Team Groot · NASA Space Apps Challenge 2026</span><span>4 / 7</span></div>
+</section>
+
+<!-- 5. Result -->
+<section class="slide s5">
+  <div class="kicker">A real example: rice land in Bogura, Bangladesh</div>
+  <h1>One small change: no failed seasons, more than twice the soil score</h1>
+  <table>
+    <thead><tr><th></th>
+      <th><small>What they grow now</small>Rice, then wheat</th><td class="gap"></td>
+      <th class="small"><small>Small change</small>Rice, then mustard, plus a cover crop</th><td class="gap"></td>
+      <th><small>Best match</small>Maize and mustard in turn, plus a cover crop</th></tr></thead>
+    <tbody>
+      <tr><td>Failed seasons, 1985-2025</td><td class="bad">3 of 81</td><td class="gap"></td><td class="small ok">0 of 81</td><td class="gap"></td><td class="ok">0 of 41</td></tr>
+      <tr><td>Failed seasons in a warmer 2050 <small>(SSP2-4.5; range across 5 models)</small></td><td class="bad">11 of 81 <small>5-17</small></td><td class="gap"></td><td class="small ok">0 of 81 <small>0-2</small></td><td class="gap"></td><td class="ok">0 of 41 <small>0-1</small></td></tr>
+      <tr><td>Soil health score</td><td class="bad">27 / 100</td><td class="gap"></td><td class="small ok">64 / 100</td><td class="gap"></td><td class="ok">63 / 100</td></tr>
+      <tr><td>Irrigation a year</td><td>144 mm</td><td class="gap"></td><td class="small">133 mm</td><td class="gap"></td><td>113 mm</td></tr>
+      <tr><td>Harvest value a hectare, before costs</td><td>about $2,100</td><td class="gap"></td><td class="small">about $2,100</td><td class="gap"></td><td>about $1,200 <small>drops rice</small></td></tr>
+    </tbody>
+  </table>
+  <div class="each">Each plan comes with: <span class="chip">Why it came up</span><span class="chip">The evidence</span><span class="chip">Possible benefits</span><span class="chip">What we do not know</span><span class="chip">What to check locally</span></div>
+  <p class="note">Simulated on NASA POWER and GPM IMERG for this field, with default priorities. Yields assume good management, so read them as a comparison. Early temperatures drift at this site; the app flags it, and failure counts are a guide (docs/VALIDATION.md, check 9). A local expert should review any change.</p>
+  <div class="foot"><span>Sky2Root · Team Groot · NASA Space Apps Challenge 2026</span><span>5 / 7</span></div>
+</section>
+
+<!-- 6. Trust -->
+<section class="slide s6">
+  <div class="kicker">Can you trust it?</div>
+  <h1>Checked against data it never used</h1>
+  <div class="grid">
+    <div>
+      <div class="stats">
+        <div class="card stat"><b>0.51</b><span>mean correlation of simulated soil water with NASA SMAP at 7 fields on 4 continents</span></div>
+        <div class="card stat"><b>12 of 15</b><span>known drought years flagged as poor or failed, including Iowa 1988 and 2012</span></div>
+        <div class="card stat"><b>4 of 4</b><span>regions where the rain record shows El Niño's known effect</span></div>
+        <div class="card stat"><b>0</b><span>parameters fitted to these checks</span></div>
+      </div>
+      <p class="honest">Where it falls short is written down too: weak agreement with SMAP at flooded rice land, a drifting early temperature record, national yields in big countries. All in docs/VALIDATION.md.</p>
+      <p class="quote">It supports farmers and advisers. It does not replace their judgement.</p>
+    </div>
+    <div class="laptop"><div class="bar"><i></i><i></i><i></i></div><img src="shots/laptop-trust.png" alt="The How sure? screen: simulation against SMAP, and what the app cannot tell you"></div>
+  </div>
+  <div class="foot"><span>Sky2Root · Team Groot · NASA Space Apps Challenge 2026</span><span>6 / 7</span></div>
+</section>
+
+<!-- 7. Team and next -->
+<section class="slide s7">
+  <div class="kicker">Team Groot</div>
+  <h1>Next: into farmers' hands, with local experts</h1>
+  <div class="grid">
+    <div>
+      <ul class="people">
+        <li><b>Shrikanta Paul</b><span>Team Lead</span></li>
+        <li><b>MD. Nurol Amin</b><span>Earth Data Engineer</span></li>
+        <li><b>Kazi Meherunnesa Eva</b><span>Crop and Climate Modeller</span></li>
+        <li><b>Fardin Ahmed Alvi</b><span>Frontend and UX Designer</span></li>
+        <li><b>Animesh Dey</b><span>Hardware and IoT Engineer</span></li>
+      </ul>
+      <div class="card links"><b>Try it</b><a>spaul571.github.io/sky2root</a><b>Code</b><a>github.com/spaul571/sky2root</a><b>Methods</b><a>docs/METHODS.md, docs/VALIDATION.md</a></div>
+    </div>
+    <div>
+      <h2>What comes next</h2>
+      <ul class="next">
+        <li>Test the Bogura results with farmers and extension officers</li>
+        <li>Native speakers to review the six other languages</li>
+        <li>Field-level crop maps and a temperature record free of drift</li>
+        <li>ECOSTRESS heat and water stress where it covers farmland</li>
+        <li>Low-cost soil probes to check SMAP on the ground</li>
+      </ul>
+      <p class="si">Built with help from an SI coding assistant (Claude Code). The app itself uses no generative SI: its advice is worked out from the simulation by fixed rules.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Sky2Root · Team Groot · NASA Space Apps Challenge 2026</span><span>7 / 7</span></div>
+</section>
+<script>
+  // On screen, fit each 1920 px slide to the window; printing uses the real size.
+  const fit = () => document.documentElement.style.setProperty("--z", Math.min(1, (innerWidth - 32) / 1920));
+  fit(); addEventListener("resize", fit);
+</script>
+</body>
+</html>

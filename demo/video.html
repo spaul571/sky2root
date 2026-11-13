@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sky2Root: 30-second demo, Team Groot</title>
+<!-- The 30-second demo as a page. tools/render_video.py reads SCENES, fits each scene to its spoken line, draws every
+     frame with DEMO.seek(t) and adds the voice. Open with ?t=12 to see one moment. All screens are the working app. -->
+<style>
+@font-face { font-family: "Archivo"; src: url("../app/css/archivo-latin.woff2") format("woff2"); font-weight: 600 800; font-stretch: 100% 125%; }
+:root { --ink: #14201a; --ink-2: #48554d; --muted: #5f6b63; --bg: #f4f6f1; --accent: #12694a; --accent-2: #0d5539; --soft: #e3f1e9; --fail: #b02f2a; --good: #0d7a40; --display: "Archivo", "Segoe UI", system-ui, sans-serif; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #000; }
+#stage { width: 1920px; height: 1080px; position: relative; overflow: hidden; font-family: "Segoe UI", system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+.scene { position: absolute; inset: 0; opacity: 0; padding: 86px 110px; background: var(--bg); }
+.dark { background: linear-gradient(135deg, #0b4a32 0%, #12694a 60%, #1c7d58 100%); color: #fff; }
+h1 { font-family: var(--display); font-weight: 800; font-size: 82px; line-height: 1.04; letter-spacing: -.015em; }
+.logo { width: 120px; height: 120px; }
+.chip { display: inline-block; padding: 12px 26px; border-radius: 999px; background: rgba(255,255,255,.14); color: #fff; font-weight: 600; font-size: 32px; border: 1px solid rgba(255,255,255,.25); }
+
+#s-intro { padding-top: 96px; text-align: center; }
+#s-intro .head { display: flex; justify-content: center; align-items: center; gap: 18px; }
+#s-intro .head .logo { width: 96px; height: 96px; }
+#s-intro h1 { font-size: 104px; }
+#s-intro .event { font-size: 30px; color: rgba(255,255,255,.82); margin-top: 10px; }
+#s-intro .members { display: flex; justify-content: center; align-items: flex-start; gap: 16px; margin-top: 76px; }
+#s-intro .member { width: 340px; display: flex; flex-direction: column; align-items: center; padding-top: 30px; }
+#s-intro .member.lead { padding-top: 0; }
+#s-intro .face { width: 270px; height: 270px; border-radius: 50%; overflow: hidden; display: block; position: relative;
+  background: radial-gradient(circle at 50% 35%, #3fae76 0%, #1c7d58 55%, #0d5539 100%); border: 5px solid rgba(255,255,255,.9); box-shadow: 0 14px 34px rgba(0,0,0,.3); }
+#s-intro .face img { position: absolute; width: 128%; left: -14%; top: -2%; }
+#s-intro .lead .face { width: 330px; height: 330px; border-color: #9be3bd; }
+#s-intro figcaption { margin-top: 18px; font-size: 24px; line-height: 1.3; color: rgba(255,255,255,.85); }
+#s-intro figcaption b { display: block; white-space: nowrap; font-family: var(--display); font-weight: 800; font-size: 29px; color: #fff; }
+#s-intro .lead figcaption b { color: #9be3bd; }
+#s-intro .motto { position: absolute; left: 0; right: 0; bottom: 70px; font-size: 30px; letter-spacing: .12em; color: rgba(255,255,255,.7); }
+
+#s-problem .sub { font-family: var(--display); font-weight: 700; font-size: 44px; color: var(--ink-2); margin-top: 18px; }
+#s-problem .months { display: flex; gap: 24px; margin-top: 50px; }
+#s-problem .months img { width: calc((100% - 96px) / 5); display: block; }
+#s-problem .src { margin-top: 18px; font-size: 26px; color: var(--muted); }
+
+#s-title { display: flex; flex-direction: column; justify-content: center; }
+#s-title .brand { display: flex; align-items: center; gap: 26px; }
+#s-title .brand b { font-family: var(--display); font-weight: 800; font-size: 150px; letter-spacing: -.02em; line-height: 1; }
+#s-title .tag { font-family: var(--display); font-weight: 700; font-size: 58px; line-height: 1.15; margin-top: 34px; max-width: 1500px; }
+#s-title .data { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 52px; max-width: 1640px; }
+
+#s-ask { text-align: center; }
+#s-ask .phones { display: flex; justify-content: center; gap: 70px; margin-top: 44px; }
+#s-ask figure { display: flex; flex-direction: column; align-items: center; }
+#s-ask .phone { width: 262px; height: 567px; border: 11px solid #14201a; border-radius: 48px; overflow: hidden; background: #fff; box-shadow: 0 18px 50px rgba(20,32,26,.28); }
+#s-ask .phone img { width: 100%; display: block; }
+#s-ask figcaption { margin-top: 18px; font-family: var(--display); font-weight: 800; font-size: 32px; }
+
+#s-replay h1 { font-size: 72px; }
+#s-replay .laptop { margin: 40px auto 0; width: 1480px; height: 640px; border-radius: 18px; overflow: hidden; background: #fff; box-shadow: 0 24px 60px rgba(20,32,26,.30); border: 1px solid rgba(20,32,26,.12); }
+#s-replay .laptop img { width: 100%; display: block; }
+
+#s-result h1 { font-size: 66px; }
+#s-result .where { font-size: 30px; color: var(--muted); margin-top: 12px; }
+#s-result .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; }
+#s-result .card { background: #fff; border-radius: 28px; padding: 30px 38px; box-shadow: 0 10px 30px rgba(20,32,26,.08); }
+#s-result .card.small { background: var(--soft); outline: 4px solid var(--accent); }
+#s-result .card small { display: block; font-size: 24px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+#s-result .card h2 { font-family: var(--display); font-weight: 800; font-size: 44px; line-height: 1.1; margin-top: 6px; min-height: 98px; }
+#s-result .row { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid #dfe5dc; padding: 14px 0; font-size: 30px; color: var(--ink-2); }
+#s-result .row b { font-family: var(--display); font-weight: 800; font-size: 50px; }
+#s-result .each { margin-top: 30px; font-size: 30px; color: var(--ink-2); }
+#s-result .bad { color: var(--fail); } #s-result .ok { color: var(--good); }
+
+#s-end { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+#s-end .brand { display: flex; align-items: center; gap: 22px; }
+#s-end .brand b { font-family: var(--display); font-weight: 800; font-size: 120px; letter-spacing: -.02em; }
+#s-end .line { font-family: var(--display); font-weight: 700; font-size: 54px; margin-top: 26px; }
+#s-end .credit { font-size: 26px; margin-top: 46px; color: rgba(255,255,255,.8); line-height: 1.5; }
+
+#s-challenge { display: flex; flex-direction: column; justify-content: center; }
+#s-challenge .kicker, #s-future .kicker { font-family: var(--display); font-weight: 700; font-size: 30px; letter-spacing: .14em; text-transform: uppercase; color: #9be3bd; }
+#s-challenge h1 { font-size: 92px; margin-top: 16px; }
+#s-challenge .quote { font-size: 40px; line-height: 1.4; margin-top: 36px; max-width: 1560px; color: rgba(255,255,255,.92); }
+.shot { margin: 34px auto 0; width: 1500px; height: 650px; border-radius: 18px; overflow: hidden; background: #fff; box-shadow: 0 24px 60px rgba(20,32,26,.30); border: 1px solid rgba(20,32,26,.12); }
+.shot img { width: 100%; display: block; }
+#s-data .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 44px; }
+#s-data .card { background: #fff; border-radius: 22px; padding: 24px 26px; min-height: 236px; box-shadow: 0 10px 30px rgba(20,32,26,.08); border-top: 8px solid var(--accent); }
+#s-data .card b { display: block; font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1.1; }
+#s-data .card span { display: block; font-size: 26px; line-height: 1.3; color: var(--ink-2); margin-top: 10px; }
+#s-trust .grid { display: grid; grid-template-columns: 600px 1fr; gap: 40px; margin-top: 36px; }
+#s-trust .stat { background: #fff; border-radius: 22px; padding: 22px 26px; margin-bottom: 18px; box-shadow: 0 10px 30px rgba(20,32,26,.08); }
+#s-trust .stat b { display: block; font-family: var(--display); font-weight: 800; font-size: 58px; line-height: 1; color: var(--accent); }
+#s-trust .stat span { display: block; font-size: 25px; line-height: 1.3; color: var(--ink-2); margin-top: 8px; }
+#s-trust .shot { margin: 0; width: auto; height: 610px; }
+#s-future { display: grid; grid-template-columns: 1fr auto; gap: 60px; align-items: center; }
+#s-future h1 { font-size: 80px; margin-top: 14px; }
+#s-future ul { list-style: none; margin-top: 34px; }
+#s-future li { font-size: 36px; line-height: 1.35; padding: 12px 0; border-top: 1px solid rgba(255,255,255,.2); }
+#s-future .phones { display: flex; gap: 34px; }
+#s-future .phone { width: 300px; height: 650px; border: 11px solid #0b2a1d; border-radius: 50px; overflow: hidden; background: #fff; box-shadow: 0 18px 50px rgba(0,0,0,.35); }
+#s-future .phone img { width: 100%; display: block; }
+#s-end .credit-local { display: none; font-size: 24px; margin-top: 18px; color: rgba(255,255,255,.7); }
+[data-cut="local"] #s-end .credit-local { display: block; }
+#s-gap { display: grid; grid-template-columns: 820px 1fr; gap: 60px; align-items: center; }
+#s-gap h1 { font-size: 84px; }
+#s-gap .sub { font-size: 36px; line-height: 1.35; margin-top: 26px; color: rgba(255,255,255,.85); }
+#s-gap .files { font-family: Consolas, "Cascadia Mono", monospace; font-size: 24px; line-height: 1.25; }
+#s-gap .files div { background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.18); border-radius: 10px; padding: 12px 16px; margin-bottom: 12px; color: #cfe9dc; word-break: break-all; }
+#s-how .cols { display: grid; grid-template-columns: 1fr 70px 1fr 70px 1fr; margin-top: 60px; align-items: stretch; }
+#s-how .col { background: #fff; border-radius: 26px; padding: 34px 34px; box-shadow: 0 10px 30px rgba(20,32,26,.08); }
+#s-how .col b { display: block; font-family: var(--display); font-weight: 800; font-size: 60px; }
+#s-how .col span { display: block; font-size: 34px; line-height: 1.35; color: var(--ink-2); margin-top: 14px; }
+#s-how .sky { border-top: 12px solid #2a78d6; } #s-how .sim { border-top: 12px solid var(--accent); } #s-how .root { border-top: 12px solid #a8794f; }
+#s-how .to { align-self: center; text-align: center; font-size: 64px; font-weight: 800; color: var(--accent); }
+#s-why .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; margin-top: 50px; }
+#s-why .card { background: #fff; border-radius: 26px; overflow: hidden; box-shadow: 0 10px 30px rgba(20,32,26,.08); }
+#s-why .card img { width: 100%; height: 300px; object-fit: cover; display: block; }
+#s-why .card b { display: block; font-family: var(--display); font-weight: 800; font-size: 36px; padding: 22px 26px 0; }
+#s-why .card span { display: block; font-size: 28px; line-height: 1.3; color: var(--ink-2); padding: 8px 26px 26px; }
+#cap { z-index: 100; position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); width: max-content; max-width: 1560px; padding: 14px 30px; border-radius: 16px; background: rgba(10,20,15,.8); color: #fff; font-size: 40px; line-height: 1.3; font-weight: 600; text-align: center; }
+#cap:empty { display: none; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 48 48">
+    <circle cx="24" cy="7" r="5" fill="#4c9be8"/>
+    <path d="M24 13 V25" stroke="#4c9be8" stroke-width="2.4" stroke-dasharray="2.5 2.5"/>
+    <path d="M24 25 C 18 22 15 17 16 13 C 21 14 24 19 24 25 Z" fill="#3fae76"/>
+    <path d="M24 25 C 29 21 33 18 34 13 C 28 13 25 18 24 25 Z" fill="#6cc797"/>
+    <path d="M8 26 H40" stroke="#7a5233" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M24 26 V36 M24 31 L18 38 M24 33 L30 41 M24 36 L21 44 M18 38 L14 40 M30 41 L34 42" stroke="#a8794f" stroke-width="2" stroke-linecap="round" fill="none"/>
+  </symbol>
+</svg>
+<div id="stage">
+  <!-- Team photos stay off GitHub, so this scene needs presentation/assets/team/ on this computer. -->
+  <section class="scene dark" id="s-intro">
+    <div class="head" data-in="0" data-a="up"><svg class="logo"><use href="#logo"/></svg><h1>Team Groot</h1></div>
+    <p class="event" data-in="0.15" data-a="fade">NASA Space Apps Challenge 2026 · Field Shift: Adapting Farms with NASA Data</p>
+    <p class="motto" data-in="0.7" data-a="fade">From the sky to the root</p>
+    <div class="members">
+      <figure class="member" data-in="0.45" data-a="pop"><span class="face"><img src="../presentation/assets/team/earth-data.png" alt=""></span><figcaption><b>MD. Nurol Amin</b>Earth Data Engineer</figcaption></figure>
+      <figure class="member" data-in="0.35" data-a="pop"><span class="face"><img src="../presentation/assets/team/crop-climate.png" alt=""></span><figcaption><b>Kazi Meherunnesa Eva</b>Crop &amp; Climate Modeller</figcaption></figure>
+      <figure class="member lead" data-in="0.2" data-a="pop"><span class="face"><img src="../presentation/assets/team/lead.png" alt=""></span><figcaption><b>Shrikanta Paul</b>Team Lead</figcaption></figure>
+      <figure class="member" data-in="0.35" data-a="pop"><span class="face"><img src="../presentation/assets/team/frontend-ux.png" alt=""></span><figcaption><b>Fardin Ahmed Alvi</b>Frontend &amp; UX Designer</figcaption></figure>
+      <figure class="member" data-in="0.45" data-a="pop"><span class="face"><img src="../presentation/assets/team/hardware-iot.png" alt=""></span><figcaption><b>Animesh Dey</b>Hardware &amp; IoT Engineer</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="scene" id="s-problem">
+    <h1 data-in="0" data-a="up">A farmer gets about 40 seasons.</h1>
+    <p class="sub" data-in="0.5" data-a="up">Rains shift, heat strikes at flowering, bare soil washes away.</p>
+    <div class="months">
+      <img src="shots/strip-2.png" alt="" data-in="0.9" data-a="pop"><img src="shots/strip-3.png" alt="" data-in="1.2" data-a="pop"><img src="shots/strip-5.png" alt="" data-in="1.5" data-a="pop"><img src="shots/strip-7.png" alt="" data-in="1.8" data-a="pop"><img src="shots/strip-9.png" alt="" data-in="2.1" data-a="pop">
+    </div>
+    <p class="src" data-in="1.4" data-a="fade">One real field in Bogura, Bangladesh, through a year from space: NASA HLS (Landsat and Sentinel-2). Green is crop; pale brown is bare soil.</p>
+  </section>
+
+  <section class="scene dark" id="s-title">
+    <div class="brand" data-in="0" data-a="pop"><svg class="logo" style="width:150px;height:150px"><use href="#logo"/></svg><b>Sky2Root</b></div>
+    <p class="tag" data-in="0.3" data-a="up">Test-drive your next crop rotation on 40 years of NASA data, before you plant.</p>
+    <div class="data">
+      <span class="chip" data-in="1.0" data-a="up">NASA POWER</span><span class="chip" data-in="1.15" data-a="up">GPM IMERG</span><span class="chip" data-in="1.3" data-a="up">SMAP</span><span class="chip" data-in="1.45" data-a="up">Landsat + Sentinel-2 (HLS)</span><span class="chip" data-in="1.6" data-a="up">MODIS</span><span class="chip" data-in="1.75" data-a="up">NEX-GDDP-CMIP6</span><span class="chip" data-in="1.9" data-a="up">GRACE-FO</span><span class="chip" data-in="2.05" data-a="up">SRTM</span>
+    </div>
+  </section>
+
+  <section class="scene" id="s-ask">
+    <h1 data-in="0" data-a="up">Three questions. One answer.</h1>
+    <div class="phones">
+      <figure data-in="0.15" data-a="left"><div class="phone"><img src="shots/phone-step1.png" alt=""></div><figcaption>Your field</figcaption></figure>
+      <figure data-in="0.45" data-a="left"><div class="phone"><img src="shots/phone-step2.png" alt=""></div><figcaption>Your crops</figcaption></figure>
+      <figure data-in="0.75" data-a="left"><div class="phone"><img src="shots/phone-step3.png" alt=""></div><figcaption>What matters</figcaption></figure>
+      <figure data-in="1.05" data-a="left"><div class="phone"><img src="shots/phone-rank.png" alt=""></div><figcaption>Your best plan</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="scene" id="s-replay">
+    <h1 data-in="0" data-a="up">Every season since 1985, then a hotter 2050</h1>
+    <div class="laptop" data-in="0.2" data-a="up"><img src="shots/laptop-replay-full.png" alt="" data-pan="400"></div>
+  </section>
+
+  <section class="scene" id="s-result">
+    <h1 data-in="0" data-a="up">One small change, tested on 81 seasons</h1>
+    <p class="where" data-in="0.2" data-a="fade">Rice land in Bogura, Bangladesh. Simulated on NASA POWER and GPM IMERG; 2050 is the middle of 5 climate models.</p>
+    <div class="cards">
+      <div class="card" data-in="0.4" data-a="up"><small>What they grow now</small><h2>Rice, then wheat</h2>
+        <div class="row">Failed seasons, 1985-2025<b class="bad">3</b></div>
+        <div class="row">Failed seasons, warmer 2050<b class="bad">11</b></div>
+        <div class="row">Soil health score<b class="bad" data-count="27" data-in="0.6">27</b></div>
+      </div>
+      <div class="card small" data-in="0.9" data-a="up"><small>Small change</small><h2>Rice, then mustard, plus a cover crop</h2>
+        <div class="row">Failed seasons, 1985-2025<b class="ok">0</b></div>
+        <div class="row">Failed seasons, warmer 2050<b class="ok">0</b></div>
+        <div class="row">Soil health score<b class="ok" data-count="64" data-in="1.1">64</b></div>
+      </div>
+    </div>
+    <p class="each" data-in="1.6" data-a="up">Every plan also says why it came up, the evidence, what is unknown, and what to check locally.</p>
+  </section>
+
+  <section class="scene dark" id="s-challenge">
+    <div class="kicker" data-in="0" data-a="fade">Our challenge · NASA Space Apps 2026</div>
+    <h1 data-in="0.15" data-a="up">Field Shift: Adapting Farms with NASA Data</h1>
+    <p class="quote" data-in="0.6" data-a="up">Build a decision-support tool that uses NASA Earth observations, local soil, crop traits and farmer priorities, so farmers can explore crop rotations that strengthen soil health and adapt to changing weather and water.</p>
+  </section>
+
+  <section class="scene" id="s-rank">
+    <h1 data-in="0" data-a="up">The best plan, in about 10 seconds</h1>
+    <div class="shot" data-in="0.2" data-a="up"><img src="shots/laptop-rank-full.png" alt="" data-pan="520"></div>
+  </section>
+
+  <section class="scene" id="s-simulate">
+    <h1 data-in="0" data-a="up">Watch any season, day by day</h1>
+    <div class="shot" data-in="0.2" data-a="up"><img src="shots/laptop-simulate-full.png" alt="" data-pan="300"></div>
+  </section>
+
+  <section class="scene" id="s-data">
+    <h1 data-in="0" data-a="up">The NASA data inside</h1>
+    <div class="grid">
+      <div class="card" data-f="0.11" data-a="pop"><b>NASA POWER</b><span>Daily temperature, humidity, wind and sunshine since 1984</span></div>
+      <div class="card" data-f="0.21" data-a="pop"><b>GPM IMERG</b><span>Daily rain since 1998</span></div>
+      <div class="card" data-f="0.32" data-a="pop"><b>SMAP</b><span>Root-zone soil moisture, an independent check</span></div>
+      <div class="card" data-f="0.41" data-a="pop"><b>HLS: Landsat and Sentinel-2</b><span>Greenness and bare soil of the field at 30 m</span></div>
+      <div class="card" data-f="0.50" data-a="pop"><b>MODIS</b><span>Greenness since 2001, land cover, burned land</span></div>
+      <div class="card" data-f="0.66" data-a="pop"><b>NEX-GDDP-CMIP6</b><span>2050 climate from 5 models and 2 scenarios</span></div>
+      <div class="card" data-f="0.82" data-a="pop"><b>GRACE and GRACE-FO</b><span>Long-term water storage trend</span></div>
+      <div class="card" data-f="0.89" data-a="pop"><b>SRTM</b><span>Slope of the land, for erosion</span></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s-trust">
+    <h1 data-in="0" data-a="up">Checked against data it never used</h1>
+    <div class="grid">
+      <div>
+        <div class="stat" data-in="0.3" data-a="up"><b>0.51</b><span>mean correlation of simulated soil water with NASA SMAP, 7 fields on 4 continents</span></div>
+        <div class="stat" data-in="0.6" data-a="up"><b>12 of 15</b><span>known drought years flagged as poor or failed</span></div>
+        <div class="stat" data-in="0.9" data-a="up"><b>4 of 4</b><span>regions where the rain record shows El Niño's known effect</span></div>
+      </div>
+      <div class="shot" data-in="0.4" data-a="up"><img src="shots/laptop-trust.png" alt=""></div>
+    </div>
+  </section>
+
+  <section class="scene dark" id="s-future">
+    <div>
+      <div class="kicker" data-in="0" data-a="fade">For farmers and advisers</div>
+      <h1 data-in="0.1" data-a="up">Free, on the web and as an app</h1>
+      <ul>
+        <li data-in="0.5" data-a="up">Works on any smartphone, no login</li>
+        <li data-in="0.8" data-a="up">In multiple languages, including Bangla</li>
+      </ul>
+    </div>
+    <div class="phones">
+      <div class="phone" data-in="0.3" data-a="left"><img src="shots/phone-rank.png" alt=""></div>
+      <div class="phone" data-in="0.55" data-a="left"><img src="shots/phone-rank-bn.png" alt=""></div>
+    </div>
+  </section>
+
+  <section class="scene dark" id="s-gap">
+    <div>
+      <h1 data-in="0" data-a="up">The data is there. The answers are not.</h1>
+      <p class="sub" data-in="0.4" data-a="up">NASA measures rain, heat, soil moisture and greenness for every field on Earth, as data files.</p>
+    </div>
+    <div class="files">
+      <div data-f="0.1" data-a="left">MERRA2_400.tavg1_2d_slv_Nx.20250701.nc4</div>
+      <div data-f="0.2" data-a="left">3B-DAY.MS.MRG.3IMERG.20250701-S000000-E235959.V07B.nc4</div>
+      <div data-f="0.3" data-a="left">SMAP_L4_SM_gph_20250701T013000_Vv7032_001.h5</div>
+      <div data-f="0.4" data-a="left">HLS.S30.T45RYH.2025182T042711.v2.0.B8A.tif</div>
+      <div data-f="0.5" data-a="left">MOD13Q1.A2025177.h26v06.061.hdf</div>
+      <div data-f="0.6" data-a="left">pr_day_MRI-ESM2-0_ssp245_r1i1p1f1_gn_2050_v2.0.nc</div>
+      <div data-f="0.7" data-a="left">GRCTellus.JPL.200204_202504.GLO.RL06.3M.MSCNv04CRI.nc</div>
+    </div>
+  </section>
+
+  <section class="scene" id="s-how">
+    <h1 data-in="0" data-a="up">From the sky to the root</h1>
+    <div class="cols">
+      <div class="col sky" data-f="0.04" data-a="up"><b>Sky</b><span>NASA satellite and Earth observation data for any location: soil, rain, temperature, vegetation</span></div>
+      <div class="to" data-f="0.31" data-a="fade">→</div>
+      <div class="col sim" data-f="0.33" data-a="up"><b>Simulate</b><span>Every growing season, day by day: weather, crop growth, planting dates, soil and rotations</span></div>
+      <div class="to" data-f="0.56" data-a="fade">→</div>
+      <div class="col root" data-f="0.58" data-a="up"><b>Root</b><span>Plans ranked by your priorities: yield, profit, water or risk, explained in plain language</span></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s-why">
+    <h1 data-in="0" data-a="up">Why rotate?</h1>
+    <div class="cards">
+      <div class="card" data-f="0.1" data-a="up"><img src="../app/img/crops/lentil.webp" alt=""><b>Legumes</b><span>Add nitrogen to the soil</span></div>
+      <div class="card" data-f="0.32" data-a="up"><img src="../app/img/crops/coverWarm.webp" alt=""><b>Cover crops</b><span>Keep living roots in the soil between harvests</span></div>
+      <div class="card" data-f="0.55" data-a="up"><img src="../app/img/crops/mustard.webp" alt=""><b>Deep roots</b><span>Open the subsoil and reach stored water</span></div>
+      <div class="card" data-f="0.72" data-a="up"><img src="../app/img/crops/rice.webp" alt=""><b>New crop families</b><span>Break pest and disease cycles</span></div>
+    </div>
+  </section>
+
+  <section class="scene dark" id="s-end">
+    <div class="brand" data-in="0" data-a="pop"><svg class="logo"><use href="#logo"/></svg><b>Sky2Root</b></div>
+    <p class="line" data-in="0.25" data-a="up">Any field on Earth. Free, in multiple languages.</p>
+    <p class="credit" data-in="0.5" data-a="fade">Team Groot · NASA Space Apps Challenge 2026</p>
+    <p class="credit-local" data-in="0.6" data-a="fade">Satellite pictures: NASA HLS through NASA GIBS.</p>
+  </section>
+
+  <div id="cap"></div>
+</div>
+<script>
+// say: the caption ("|" splits it into chunks shown one after another); speak: the same line spelled for the voice.
+// min: shortest scene; extra: seconds added after the line; hold: length of a scene with no voice.
+// Scene lengths are set by tools/render_video.py. ?cut=local is the 240-second local judging video.
+const CUTS = {
+  short: [
+    { id: "intro", say: "Hi, we're Team Groot.", speak: "Hi, we're Team Groot.", min: 2.8, cap: false }, // the scene already says it
+    { id: "problem", say: "Farmers get about 40 seasons in a lifetime, and the climate keeps changing the rules.", speak: "Farmers get about forty seasons in a lifetime, and the climate keeps changing the rules." },
+    { id: "title", say: "Sky2Root lets them test-drive crop rotations on 40 years of NASA data.", speak: "Sky to Root lets them test-drive crop rotations on forty years of NASA data." },
+    { id: "ask", say: "Mark a field, pick your crops, say what matters,", speak: "Mark a field, pick your crops, say what matters," },
+    { id: "replay", say: "and it replays every season since 1985, then a hotter 2050.", speak: "and it replays every season since nineteen eighty-five, then a hotter twenty fifty." },
+    { id: "result", say: "In Bangladesh, one small change more than doubles the soil score, with no failed seasons.", speak: "In Bangladesh, one small change more than doubles the soil score, with no failed seasons." },
+    { id: "end", say: "", speak: "", hold: 2.6 },
+  ],
+  local: [
+    { id: "intro", say: "Hello, we're Team Groot.|Our team brings together a team lead, an Earth data engineer,|a crop and climate modeller, a frontend and UX designer, and a hardware and IoT engineer.", speak: "Hello, we're Team Groot. Our team brings together a team lead, an Earth data engineer, a crop and climate modeller, a frontend and UX designer, and a hardware and IoT engineer.", extra: 1 },
+    { id: "challenge", say: "We chose the challenge Field Shift: Adapting Farms with NASA Data.|It asks for a tool to help farmers explore crop rotations|that protect their soil and adapt to changing weather and water.", speak: "We chose the challenge Field Shift: Adapting Farms with NASA Data. It asks for a tool to help farmers explore crop rotations that protect their soil and adapt to changing weather and water.", extra: 0.8 },
+    { id: "problem", say: "A farmer gets about forty seasons in a lifetime, so every season counts.|But rains now start late or stop early, heat strikes at flowering,|and bare fields lose their soil to heavy rain.|Rotations that worked for decades now fail more often.", speak: "A farmer gets about forty seasons in a lifetime, so every season counts. But rains now start late or stop early, heat strikes at flowering, and bare fields lose their soil to heavy rain. Rotations that worked for decades now fail more often.", extra: 0.5 },
+    { id: "gap", say: "So, changing crops is risky: a crop that helps the soil in one place|may use too much water, miss the season, or not sell in another.|NASA satellites already measure rain, heat, soil moisture and greenness for every field on Earth,|but as data files, not answers.", speak: "So, changing crops is risky: a crop that helps the soil in one place may use too much water, miss the season, or not sell in another. NASA satellites already measure rain, heat, soil moisture and greenness for every field on Earth, but as data files, not answers.", extra: 0.8 },
+    { id: "title", say: "Therefore, we introduced Sky2Root.|It lets farmers, and the advisers who help them,|test-drive a crop rotation on forty years of NASA data, before they plant.", speak: "Therefore, we introduced Sky to Root. It lets farmers, and the advisers who help them, test-drive a crop rotation on forty years of NASA data, before they plant.", extra: 0.8 },
+    { id: "how", say: "NASA satellite and Earth observation data for any location on the planet,|capturing soil conditions, rainfall, temperature, vegetation,|and other environmental factors that shape agricultural potential.|Every growing season simulated day by day, accounting for weather patterns,|crop growth cycles, planting dates, soil conditions, and crop rotations,|to compare how different farming decisions perform over time.|Farming plans ranked by the farmer's priorities, whether yield, profitability,|water efficiency, or risk reduction, with clear, plain-language explanations|of the expected outcomes and why each plan is recommended.", speak: "NASA satellite and Earth observation data for any location on the planet, capturing soil conditions, rainfall, temperature, vegetation, and other environmental factors that shape agricultural potential. Every growing season simulated day by day, accounting for weather patterns, crop growth cycles, planting dates, soil conditions, and crop rotations, to compare how different farming decisions perform over time. Farming plans ranked by the farmer's priorities, whether yield, profitability, water efficiency, or risk reduction, with clear, plain-language explanations of the expected outcomes and why each plan is recommended.", extra: 0.8 },
+    { id: "ask", say: "Here is a demonstration of the working app. Mark your field anywhere on Earth,|pick what you grow now and your water, then slide what matters most.", speak: "Here is a demonstration of the working app. Mark your field anywhere on Earth, pick what you grow now and your water, then slide what matters most.", extra: 1 },
+    { id: "rank", say: "In about ten seconds, it tests every rotation|and shows the best plan for your priorities, next to what you grow now.", speak: "In about ten seconds, it tests every rotation, and shows the best plan for your priorities, next to what you grow now.", extra: 1.5 },
+    { id: "result", say: "On rice land in Bogura, Bangladesh, rice then wheat failed 3 of 81 simulated seasons.|A small change, mustard and a cover crop instead of wheat, failed none,|even in a hotter 2050, and more than doubled the soil score.|Each plan explains why, the evidence, the unknowns, and what to check locally.", speak: "On rice land in Bogura, Bangladesh, rice then wheat failed three of eighty-one simulated seasons. A small change, mustard and a cover crop instead of wheat, failed none, even in a hotter twenty fifty, and more than doubled the soil score. Each plan explains why, the evidence, the unknowns, and what to check locally.", extra: 1 },
+    { id: "why", say: "So, why rotate? Legumes like lentil and chickpea add nitrogen.|Cover crops keep living roots in the soil between harvests.|Deep roots open the subsoil, and changing crop families breaks pest and disease cycles.", speak: "So, why rotate? Legumes like lentil and chickpea add nitrogen. Cover crops keep living roots in the soil between harvests. Deep roots open the subsoil, and changing crop families breaks pest and disease cycles.", extra: 1 },
+    { id: "replay", say: "Behind every answer, each season since 1985 is simulated day by day|on this field's real weather, then replayed in a hotter 2050 with five climate models.", speak: "Behind every answer, each season since nineteen eighty-five is simulated day by day on this field's real weather, then replayed in a hotter twenty fifty with five climate models.", extra: 1 },
+    { id: "simulate", say: "You can even watch a season unfold, day by day.", speak: "You can even watch a season unfold, day by day.", extra: 1.5 },
+    { id: "data", say: "These are the datasets used in this platform. NASA POWER gives daily weather since 1984,|and GPM IMERG gives daily rain. SMAP soil moisture checks the simulation.|Landsat and Sentinel-2, through HLS, and MODIS show the field's greenness and bare soil.|NEX-GDDP-CMIP6 gives 2050 climate, GRACE-FO the water-storage trend, and SRTM the slope for erosion.", speak: "These are the datasets used in this platform. NASA POWER gives daily weather since 1984, and GPM IMERG gives daily rain. SMAP soil moisture checks the simulation. Landsat and Sentinel-2, through HLS, and MODIS show the field's greenness and bare soil. NEX-GDDP-CMIP6 gives 2050 climate, GRACE-FO the water-storage trend, and SRTM the slope for erosion.", extra: 1 },
+    { id: "trust", say: "We checked it against data it never used:|soil water follows NASA SMAP at seven test fields,|and it caught 12 of 15 known drought years. Where it falls short, it says so.", speak: "We checked it against data it never used: soil water follows NASA SMAP at seven test fields, and it caught twelve of fifteen known drought years. Where it falls short, it says so.", extra: 1 },
+    { id: "future", say: "Sky2Root is free. It works as a website and as an app on any smartphone,|in multiple languages, including Bangla.", speak: "Sky to Root is free. It works as a website and as an app on any smartphone, in multiple languages, including Bangla.", extra: 1 },
+    { id: "end", say: "Sky2Root supports farmers' judgement. It does not replace it.", speak: "Sky to Root supports farmers' judgement. It does not replace it.", extra: 2 },
+  ],
+};
+const CUT = new URLSearchParams(location.search).get("cut") === "local" ? "local" : "short";
+document.body.dataset.cut = CUT;
+const SCENES = CUTS[CUT];
+let durations = SCENES.map((s) => s.hold || s.min || 5), speech = durations.map((d) => Math.max(0, d - 1));
+const FADE = 0.3, LEAD = 0.35, EASE = (p) => 1 - Math.pow(1 - p, 3), clamp = (x) => Math.max(0, Math.min(1, x));
+const scenes = SCENES.map((s) => document.getElementById("s-" + s.id));
+const cap = document.getElementById("cap");
+const starts = () => durations.reduce((a, d, i) => (a.push(i ? a[i - 1] + durations[i - 1] : 0), a), []);
+
+function seek(t) {
+  const st = starts();
+  let current = 0;
+  scenes.forEach((el, i) => {
+    const local = t - st[i], d = durations[i];
+    const shown = local >= 0 && local < d + (i < scenes.length - 1 ? FADE : 0);
+    if (local >= 0 && local < d) current = i;
+    el.style.zIndex = i;
+    el.style.opacity = shown ? (i ? EASE(clamp(local / FADE)) : 1) : 0;
+    if (!shown) return;
+    el.querySelectorAll("[data-a]").forEach((n) => {
+      const p = EASE(clamp((local - (n.dataset.f ? n.dataset.f * d : +n.dataset.in)) / 0.55)), a = n.dataset.a;
+      n.style.opacity = p;
+      n.style.transform = a === "up" ? `translateY(${(1 - p) * 40}px)` : a === "left" ? `translateX(${(1 - p) * 140}px)` : a === "pop" ? `scale(${0.86 + 0.14 * p})` : "";
+    });
+    el.querySelectorAll("[data-pan]").forEach((n) => { n.style.transform = `translateY(${-n.dataset.pan * EASE(clamp((local - 0.9) / Math.max(0.5, d - 1.6)))}px)`; });
+    el.querySelectorAll("[data-count]").forEach((n) => { n.textContent = Math.round(+n.dataset.count * EASE(clamp((local - +n.dataset.in) / 0.9))); });
+  });
+  const sc = SCENES[current], parts = sc.say.split("|"), total = parts.join("").length || 1;
+  let at = (t - st[current] - LEAD) / (speech[current] || 1) * total, k = 0;  // the chunk being spoken, by its share of the letters
+  while (k < parts.length - 1 && at >= parts[k].length) { at -= parts[k].length; k++; }
+  cap.textContent = sc.cap === false ? "" : parts[k];
+}
+window.DEMO = {
+  scenes: SCENES,
+  get duration() { return durations.reduce((a, b) => a + b, 0); },
+  setDurations(d, spoken) { durations = d.slice(); if (spoken) speech = spoken.slice(); seek(0); },
+  seek,
+  ready: false,
+};
+Promise.all([document.fonts.ready, ...[...document.images].map((i) => i.decode().catch(() => null))]).then(() => {
+  seek(+(new URLSearchParams(location.search).get("t") || 0));
+  window.DEMO.ready = true;
+});
+</script>
+</body>
+</html>

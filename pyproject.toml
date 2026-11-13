@@ -1,0 +1,16 @@
+[project]
+name = "sky2root-tools"
+version = "0.1.0"
+description = "Data preparation tools for Sky2Root (the app itself is static and has no Python)"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy",
+  "h5py",
+  "fsspec",
+  "aiohttp",
+  "requests",
+  "rasterio>=1.4.4",
+]
+
+[tool.uv]
+package = false

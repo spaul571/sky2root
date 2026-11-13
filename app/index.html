@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12694a">
+  <title>Sky2Root: find the best crops for your field with NASA data</title>
+  <meta name="description" content="Test crop plans for any field on Earth against 40 years of NASA data and a hotter 2050, before you plant. Free, with no sign-up.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 25C18 22 15 17 16 13C21 14 24 19 24 25Z' fill='%233fae76'/%3E%3Cpath d='M24 25C29 21 33 18 34 13C28 13 25 18 24 25Z' fill='%236cc797'/%3E%3Cpath d='M8 26H40M24 26V44' stroke='%237a5233' stroke-width='3'/%3E%3Ccircle cx='24' cy='7' r='5' fill='%234c9be8'/%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c0-4-3-6.5-7.500-6.500C4.500 9.500 7.500 12 12 12z"/><path d="M12 15c0-3.500 2.500-6 7.500-6 0 3.500-3 6-7.500 6z"/><path d="M7 21h10"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.500" height="7.500" rx="1.500"/><rect x="13.500" y="3" width="7.500" height="7.500" rx="1.500"/><rect x="3" y="13.500" width="7.500" height="7.500" rx="1.500"/><rect x="13.500" y="13.500" width="7.500" height="7.500" rx="1.500"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.500l5.500 3.500-5.500 3.500z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 15a4 4 0 0 1 .4-8A5.500 5.500 0 0 1 18 8.500a3.300 3.300 0 0 1-.5 6.500z"/><path d="M8 18.500l-1 2.500M13 18.500l-1 2.500M18 18.500l-1 2.500"/></symbol>
+    <symbol id="i-sat" viewBox="0 0 24 24"><path d="M13.500 6.500l4 4-5 5-4-4z"/><path d="M8.500 3.500l3 3-2.500 2.500-3-3z"/><path d="M18 12.500l3 3-2.500 2.500-3-3z"/><path d="M4 15a5 5 0 0 0 5 5"/><path d="M4 19h.01"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.500 8-8 9-4.500-1-8-4-8-9V6z"/><path d="M8.500 12l2.500 2.500 4.500-5"/></symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.300"/><circle cx="12" cy="12" r="1.300"/><circle cx="19" cy="12" r="1.300"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20.500 20.500L16 16"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.500 2.500 3.800 5.500 3.800 9s-1.300 6.500-3.800 9c-2.500-2.500-3.800-5.500-3.800-9S9.500 5.500 12 3z"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6.500 6.500 6.500 11a6.500 6.500 0 0 1-13 0C5.500 9.500 12 3 12 3z"/></symbol>
+    <symbol id="i-wheat" viewBox="0 0 24 24"><path d="M12 22V8"/><path d="M12 8c-1.800-1.200-2.500-3-2.500-5 1.500.3 2.500 1.200 2.500 2.500 0-1.300 1-2.200 2.500-2.500 0 2-.7 3.800-2.500 5z"/><path d="M12 14c-2.500 0-4.500-1.500-5-4 2.500 0 4.500 1.500 5 4zM12 14c2.500 0 4.500-1.500 5-4-2.500 0-4.500 1.500-5 4z"/><path d="M12 20c-2.500 0-4.500-1.500-5-4 2.500 0 4.500 1.500 5 4zM12 20c2.500 0 4.500-1.500 5-4-2.500 0-4.500 1.500-5 4z"/></symbol>
+    <symbol id="i-feed" viewBox="0 0 24 24"><path d="M4 21c1.500-5 2.500-8.500 2.500-13M12 21V5M20 21c-1.500-5-2.500-8.500-2.500-13M8.500 21c.7-3 1.800-5 3.500-7M15.500 21c-.7-3-1.800-5-3.500-7"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.500l4.500 4.500L19 7.500"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.500 9.500a2.500 2.500 0 1 1 3.800 2.100c-.8.500-1.300 1-1.300 1.900"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 8.500c-.7-1-1.800-1.500-3-1.500-1.900 0-3.300 1-3.300 2.500 0 3.300 6.600 1.700 6.600 5 0 1.500-1.500 2.500-3.300 2.500-1.300 0-2.500-.5-3.200-1.500M12 5.500v13"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/></symbol>
+  </svg>
+
+  <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+  <header class="top">
+    <button class="brand" id="brand" type="button" aria-label="Sky2Root">
+      <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="7" r="5" fill="#4c9be8"/>
+        <path d="M24 13 V25" stroke="#4c9be8" stroke-width="2.4" stroke-dasharray="2.5 2.5"/>
+        <path d="M24 25 C 18 22 15 17 16 13 C 21 14 24 19 24 25 Z" fill="#3fae76"/>
+        <path d="M24 25 C 29 21 33 18 34 13 C 28 13 25 18 24 25 Z" fill="#6cc797"/>
+        <path d="M8 26 H40" stroke="#7a5233" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M24 26 V36 M24 31 L18 38 M24 33 L30 41 M24 36 L21 44 M18 38 L14 40 M30 41 L34 42" stroke="#a8794f" stroke-width="2" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span class="name">Sky2Root</span>
+    </button>
+    <button class="field-chip" id="field-chip" type="button" hidden>
+      <svg class="ic"><use href="#i-pin"/></svg><span id="field-name"></span>
+    </button>
+    <span class="bg-status" id="bg-status" role="status" hidden><span class="spin"></span><span class="txt" data-i18n="top.loading">Fetching satellite data</span></span>
+    <label class="lang">
+      <svg class="ic"><use href="#i-globe"/></svg>
+      <span class="sr" data-i18n="lang">Language</span>
+      <select id="lang"></select>
+    </label>
+  </header>
+
+  <nav class="side" id="nav" aria-label="Screens">
+    <button type="button" data-screen="field"><svg class="ic"><use href="#i-pin"/></svg><span data-i18n="nav.field">My field</span></button>
+    <button type="button" data-screen="rank"><svg class="ic"><use href="#i-sprout"/></svg><span data-i18n="nav.rank">Best plan</span></button>
+    <button type="button" data-screen="replay"><svg class="ic"><use href="#i-grid"/></svg><span data-i18n="nav.replay">Past seasons</span></button>
+    <button type="button" data-screen="simulate"><svg class="ic"><use href="#i-play"/></svg><span data-i18n="nav.simulate">Watch a season</span></button>
+    <button type="button" class="extra" data-screen="data"><svg class="ic"><use href="#i-cloud"/></svg><span data-i18n="nav.data">Climate</span></button>
+    <button type="button" class="extra" data-screen="monitor"><svg class="ic"><use href="#i-sat"/></svg><span data-i18n="nav.monitor">From space</span></button>
+    <button type="button" class="extra" data-screen="trust"><svg class="ic"><use href="#i-shield"/></svg><span data-i18n="nav.trust">How sure?</span></button>
+    <button type="button" class="more" id="more" aria-expanded="false"><svg class="ic"><use href="#i-dots"/></svg><span data-i18n="nav.more">More</span></button>
+    <p class="side-note" data-i18n="nav.note">Sky2Root supports farmers and advisers. It does not replace your judgement or local agricultural expertise.</p>
+  </nav>
+
+  <main id="main">
+    <!-- 1. Field: three short steps -->
+    <section class="screen on" id="screen-field">
+      <div class="wizard" id="wizard">
+        <ol class="steps" id="steps">
+          <li><button type="button" data-step="1"><span data-i18n="step.where">Your field</span></button></li>
+          <li><button type="button" data-step="2"><span data-i18n="step.crops">Your crops</span></button></li>
+          <li><button type="button" data-step="3"><span data-i18n="step.matters">What matters</span></button></li>
+        </ol>
+
+        <div class="step on" data-step="1">
+          <header class="screen-head">
+            <p class="eyebrow" data-i18n="s1.eyebrow">Test your next crops on 40 years of NASA data, before you plant.</p>
+            <h1 tabindex="-1" data-i18n="s1.title">Where is your field?</h1>
+            <p data-i18n="s1.sub">Search for your village or town, or tap the map. Zoom in until you can see your land, then tap the middle of your field.</p>
+            <button class="linkish" id="to-examples" type="button" data-i18n="ex.jump" hidden>Just looking? Open an example</button>
+          </header>
+          <div class="where">
+            <div class="card map-card">
+              <form class="search" id="search-form" role="search">
+                <label class="sr" for="search" data-i18n="search.label">Search for a place</label>
+                <input type="search" id="search" data-i18n-ph="search.ph" placeholder="Village, town or district" autocomplete="off" enterkeyhint="search">
+                <button class="btn primary" type="submit" data-i18n-aria="search.btn" aria-label="Search"><svg class="ic"><use href="#i-search"/></svg></button>
+              </form>
+              <div class="search-results" id="search-results" hidden></div>
+              <div class="map-wrap">
+                <div id="world-map" role="application" data-i18n-aria="map.aria" aria-label="World map. Tap to place your field."></div>
+                <button class="btn map-locate" id="locate" type="button"><svg class="ic"><use href="#i-target"/></svg><span data-i18n="locate">Use my location</span></button>
+              </div>
+              <p class="point-note" id="point-note" role="status"></p>
+              <div class="wiz-actions">
+                <button class="btn primary" id="next1" type="button" disabled><span data-i18n="next">Next</span><svg class="ic"><use href="#i-next"/></svg></button>
+              </div>
+              <details class="plain">
+                <summary data-i18n="coords">Enter coordinates instead</summary>
+                <div class="coords-row">
+                  <label class="field"><span data-i18n="lat">Latitude</span><input type="number" id="lat" inputmode="decimal" step="0.01" min="-60" max="84"></label>
+                  <label class="field"><span data-i18n="lon">Longitude</span><input type="number" id="lon" inputmode="decimal" step="0.01" min="-180" max="180"></label>
+                </div>
+              </details>
+              <p class="caption" data-i18n="map.credit">Map: NASA Blue Marble and Landsat, through NASA GIBS. Search: OpenStreetMap.</p>
+            </div>
+            <aside class="examples" id="examples" hidden>
+              <h2 data-i18n="ex.title">Or try an example</h2>
+              <p class="muted" data-i18n="ex.sub">Real farming areas, ready to open.</p>
+              <div class="ex-grid" id="demos"></div>
+            </aside>
+          </div>
+        </div>
+
+        <div class="step narrow" data-step="2">
+          <header class="screen-head">
+            <h1 tabindex="-1" data-i18n="s2.title">What do you grow now?</h1>
+            <p data-i18n="s2.sub">We compare every option with what you do today. If you are not sure, a close guess is fine.</p>
+          </header>
+          <div class="card">
+            <h2 class="q" data-i18n="s2.pattern">How do you plant?</h2>
+            <div class="choices" id="pattern-seg"></div>
+            <div class="crop-row">
+              <div class="field" role="group" aria-labelledby="crop1-label"><span id="crop1-label"></span><div id="crop1"></div></div>
+              <div class="field" id="crop2-wrap" role="group" aria-labelledby="crop2-label"><span id="crop2-label"></span><div id="crop2"></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h2 class="q" data-i18n="s2.water">Where does your water come from?</h2>
+            <div class="choices" id="water-seg"></div>
+            <div class="field" id="cap-row" hidden style="margin-top:14px">
+              <label for="cap" data-i18n="s2.cap">Water you can give your crops in a year</label>
+              <input id="cap" type="range" min="50" max="600" step="25" value="150">
+              <output id="cap-out" for="cap">150 mm</output>
+              <span class="hint" data-i18n="hint.mm">1 mm of water is 1 litre on each square metre.</span>
+            </div>
+            <label class="check-row"><input type="checkbox" id="floods"><span data-i18n="s2.floods">This land floods or stays waterlogged in the rainy season</span></label>
+            <p class="hint water-hint" id="water-hint" role="status" hidden></p>
+          </div>
+          <div class="wiz-actions">
+            <button class="btn" type="button" data-goto="1"><svg class="ic"><use href="#i-back"/></svg><span data-i18n="back">Back</span></button>
+            <button class="btn primary" type="button" data-goto="3"><span data-i18n="next">Next</span><svg class="ic"><use href="#i-next"/></svg></button>
+          </div>
+        </div>
+
+        <div class="step narrow" data-step="3">
+          <header class="screen-head">
+            <h1 tabindex="-1" data-i18n="s3.title">What matters most to you?</h1>
+            <p data-i18n="s3.sub">Slide each one. We put the crop plans in order to match. You can change this later.</p>
+          </header>
+          <div class="card"><div class="sliders" id="sliders"></div></div>
+          <details class="card more">
+            <summary><span data-i18n="s3.crops">Crops you can grow and sell (optional)</span><svg class="ic chev"><use href="#i-chev"/></svg></summary>
+            <div class="body">
+              <p class="hint" id="market-note" style="margin:0"></p>
+              <div class="checks" id="allowed"></div>
+            </div>
+          </details>
+          <details class="card more">
+            <summary><span data-i18n="s3.soil">Your soil test (optional)</span><svg class="ic chev"><use href="#i-chev"/></svg></summary>
+            <div class="body">
+              <p class="hint" style="margin:0 0 10px" data-i18n="s3.soil.note">Leave blank and we use global soil maps. A soil test is better.</p>
+              <div class="soil-row">
+                <label class="field"><span data-i18n="soil.sand">Sand %</span><input type="number" inputmode="decimal" id="soil-sand" min="1" max="95"></label>
+                <label class="field"><span data-i18n="soil.clay">Clay %</span><input type="number" inputmode="decimal" id="soil-clay" min="1" max="70"></label>
+                <label class="field"><span data-i18n="soil.soc">Organic carbon %</span><input type="number" inputmode="decimal" id="soil-soc" min="0.1" max="10" step="0.1"></label>
+                <label class="field"><span data-i18n="soil.ph">pH</span><input type="number" inputmode="decimal" id="soil-ph" min="3" max="10" step="0.1"></label>
+              </div>
+            </div>
+          </details>
+          <div class="wiz-actions">
+            <button class="btn" type="button" data-goto="2"><svg class="ic"><use href="#i-back"/></svg><span data-i18n="back">Back</span></button>
+            <button class="btn primary" id="run" type="button"><span data-i18n="run">Test crop plans</span><svg class="ic"><use href="#i-next"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="busy" id="busy" hidden>
+        <div class="card busy-card">
+          <div id="busy-main" role="status">
+            <h1 data-i18n="busy.title">Testing crop plans on your field</h1>
+            <p id="busy-now"></p>
+            <div class="bar"><i id="busy-bar"></i></div>
+            <p class="muted" data-i18n="busy.sub">This takes about 10 seconds for a new field. Slower satellite data keeps loading after you see your answer.</p>
+          </div>
+          <div id="busy-error" role="alert" hidden>
+            <h1 data-i18n="err.title">We could not finish</h1>
+            <p id="busy-error-msg"></p>
+            <div class="error-actions">
+              <button class="btn primary" id="retry" type="button" data-i18n="err.retry">Try again</button>
+              <button class="btn" id="busy-back" type="button" data-i18n="back">Back</button>
+            </div>
+          </div>
+          <details class="plain">
+            <summary data-i18n="busy.details">What is happening</summary>
+            <ul class="progress" id="progress"></ul>
+            <p class="error-detail" id="busy-error-detail"></p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. The answer -->
+    <section class="screen" id="screen-rank">
+      <header class="screen-head">
+        <h1 tabindex="-1" data-i18n="rank.title">Your best crop plan</h1>
+        <p id="rank-sub"></p>
+      </header>
+      <div class="pills" id="rank-period"></div>
+      <p class="period-note" id="rank-period-note" hidden></p>
+      <div class="card" id="custom-card-rank" hidden></div>
+      <div class="answer-grid">
+        <div>
+          <article class="hero" id="answer"></article>
+          <section class="card enso" id="enso-card" hidden></section>
+          <div class="accordion" id="explain"></div>
+        </div>
+        <aside>
+          <section class="card">
+            <h2 data-i18n="opts.title">All the options</h2>
+            <p class="hint" style="margin:-4px 0 10px" data-i18n="opts.sub">Tap one to see it. The number shows how well it fits what matters to you, out of 100.</p>
+            <ol class="opts" id="ranking"></ol>
+            <p class="caption" id="rank-caption"></p>
+          </section>
+          <details class="card more">
+            <summary><span data-i18n="prefs.title">Change what matters</span><svg class="ic chev"><use href="#i-chev"/></svg></summary>
+            <div class="body"><div class="sliders" id="rank-sliders"></div></div>
+          </details>
+          <details class="card more" id="scatter-box">
+            <summary><span data-i18n="scatter.title">Compare on a chart</span><svg class="ic chev"><use href="#i-chev"/></svg></summary>
+            <div class="body">
+              <p class="hint" style="margin:0 0 8px" data-i18n="scatter.sub">Each dot is one crop plan. Higher means healthier soil; further right means fewer failed seasons.</p>
+              <svg id="scatter" class="chart" role="img" data-i18n-aria="scatter.aria" aria-label="Seasons not failed against soil score"></svg>
+            </div>
+          </details>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 3. Past seasons -->
+    <section class="screen" id="screen-replay">
+      <header class="screen-head">
+        <h1 tabindex="-1" data-i18n="rep.title">Past seasons</h1>
+        <p data-i18n="rep.sub">What would have happened every season since 1985, on this field's real NASA weather. Each box is one year.</p>
+      </header>
+      <div class="toolbar">
+        <label class="field"><span data-i18n="label.plan">Crop plan</span><select id="rep-rot"></select></label>
+        <div class="pills" id="rep-period"></div>
+      </div>
+      <p class="period-note" id="rep-period-note" hidden></p>
+      <div class="card" id="custom-card-rep" hidden></div>
+      <div class="card">
+        <p class="tally-total" id="rep-total"></p>
+        <div class="tally-bar" id="rep-bar" aria-hidden="true"></div>
+        <div class="stats" id="rep-stats"></div>
+        <p class="tally-trend" id="rep-trend"></p>
+        <div class="years" id="rep-years"></div>
+        <div class="legend" id="rep-legend"></div>
+        <div class="year-detail" id="rep-detail" aria-live="polite"></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="rep.why">What went wrong</h2>
+        <div id="rep-why"></div>
+        <p class="caption" id="rep-note"></p>
+      </div>
+    </section>
+
+    <!-- 4. Watch a season -->
+    <section class="screen" id="screen-simulate">
+      <header class="screen-head">
+        <h1 tabindex="-1" data-i18n="sim.title">Watch a season</h1>
+        <p data-i18n="sim.sub">One real season, day by day. Rain fills the soil, the crop drinks it down, and heat at flowering can hurt the harvest.</p>
+      </header>
+      <div class="toolbar two">
+        <label class="field"><span data-i18n="label.plan">Crop plan</span><select id="sim-rot"></select></label>
+        <label class="field"><span data-i18n="label.season">Season</span><select id="sim-season"></select></label>
+      </div>
+      <div class="card sim-card">
+        <div id="sim-view"></div>
+        <div class="player" id="player">
+          <button class="btn primary" id="sim-play" type="button"><svg class="ic"><use href="#i-play"/></svg><span id="sim-play-label"></span></button>
+          <input id="sim-day" type="range" min="0" max="120" step="0.1" value="0" data-i18n-aria="sim.dayAria" aria-label="Day of the season">
+          <div class="pills" id="sim-speed"></div>
+        </div>
+      </div>
+      <div class="stats wrap" id="sim-summary"></div>
+    </section>
+
+    <!-- 5. Climate -->
+    <section class="screen" id="screen-data">
+      <header class="screen-head">
+        <h1 tabindex="-1" data-i18n="data.title">Your climate</h1>
+        <p data-i18n="data.sub">What NASA measures at this field, and how it has changed. Every number comes from the datasets named.</p>
+      </header>
+      <p class="lang-note" data-i18n="note.english">Some details on this screen are still in English.</p>
+      <div class="cols">
+        <div class="card">
+          <h2 data-i18n="data.here">The climate here</h2>
+          <svg id="clim-chart" class="chart" role="img" data-i18n-aria="data.chartAria" aria-label="Monthly rain, crop water demand and temperature"></svg>
+          <div class="legend" id="clim-legend"></div>
+          <p class="caption" id="clim-caption"></p>
+          <div id="clim-facts"></div>
+        </div>
+        <div class="card">
+          <h2 data-i18n="data.changing">Is it changing?</h2>
+          <div id="trends"></div>
+          <details class="plain">
+            <summary data-i18n="how.summary">How this is worked out</summary>
+            <p data-i18n="data.how">Change per ten years is a Theil-Sen slope. "Clear" means a Mann-Kendall test finds it unlikely to be chance (p under 0.05). Rain measures use satellite years only, as a trend across the change of rain source would mean nothing.</p>
+          </details>
+          <div id="now-facts"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="data.layers">See it on the map</h2>
+        <div class="pills" id="layer-seg"></div>
+        <label class="field layer-date"><span data-i18n="label.date">Date</span><input type="date" id="layer-date"></label>
+        <div id="layer-map"></div>
+        <p class="caption" id="layer-caption"></p>
+      </div>
+    </section>
+
+    <!-- 6. From space -->
+    <section class="screen" id="screen-monitor">
+      <header class="screen-head">
+        <h1 tabindex="-1" data-i18n="mon.title">From space</h1>
+        <p data-i18n="mon.sub">Satellites keep watching. This is the real greenness of your field: when it is covered, and when the soil lies bare.</p>
+      </header>
+      <p class="lang-note" data-i18n="note.english">Some details on this screen are still in English.</p>
+      <div class="card" id="strip-card" hidden>
+        <h2 data-i18n="mon.strip">Your field through the year</h2>
+        <div class="strip" id="strip"></div>
+        <p class="caption" data-i18n="mon.strip.cap">True colour from HLS (Landsat and Sentinel-2) through NASA GIBS, one clear view a month, about 2.6 km across. The cross marks your pin. Green is growing crop; pale brown is bare soil.</p>
+      </div>
+      <div class="card">
+        <svg id="ndvi" class="chart" role="img" data-i18n-aria="mon.aria" aria-label="Greenness over time"></svg>
+        <p class="caption" id="ndvi-caption"></p>
+      </div>
+      <div class="cols">
+        <div class="card"><h2 data-i18n="mon.bare">Bare-soil days each year</h2><div id="bare-bars"></div></div>
+        <div class="card"><h2 data-i18n="mon.notes">What this tells you</h2><div id="monitor-notes"></div></div>
+      </div>
+    </section>
+
+    <!-- 7. How sure? -->
+    <section class="screen" id="screen-trust">
+      <header class="screen-head">
+        <h1 tabindex="-1" data-i18n="trust.title">How sure can you be?</h1>
+        <p data-i18n="trust.sub">Where we can check the simulation against what satellites saw, and what it cannot know.</p>
+      </header>
+      <p class="lang-note" data-i18n="note.english">Some details on this screen are still in English.</p>
+      <div class="cols">
+        <div class="card">
+          <h2 data-i18n="trust.smap">Does our soil water match NASA's satellites?</h2>
+          <svg id="smap-chart" class="chart" role="img" data-i18n-aria="trust.aria" aria-label="Simulated soil wetness and SMAP root-zone soil moisture over time"></svg>
+          <div class="legend" id="smap-legend"></div>
+          <div id="trust-checks"></div>
+        </div>
+        <div class="card">
+          <h2 data-i18n="trust.cannot">What it cannot tell you</h2>
+          <ul id="limits"></ul>
+          <h2 data-i18n="trust.ground">Satellite and ground</h2>
+          <p data-i18n="trust.groundText">Satellites see every field every few days but only broadly: NASA's weather and soil moisture cover squares tens of kilometres wide, and the top of the soil more than the root zone. A rain gauge or soil probe is exact, but only at one spot. They are strongest together: a soil test or a season of your own rain records beats our defaults, so enter yours where you can.</p>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="card glossary">
+          <h2 data-i18n="trust.words">What the words mean</h2>
+          <dl id="glossary"></dl>
+        </div>
+        <div class="card">
+          <h2 data-i18n="trust.sources">Data and sources</h2>
+          <ul class="sources" id="sources"></ul>
+          <details class="plain">
+            <summary data-i18n="trust.photos">Crop photo credits</summary>
+            <ul class="sources credits" id="photo-credits"></ul>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="tip" id="tip" hidden></div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/nasa.js"></script>
+  <script src="js/explain.js"></script>
+  <script src="js/season-view.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

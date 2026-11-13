@@ -1,0 +1,23 @@
+[
+  { "id": "sorriso-brazil", "country": "BR", "name": "Sorriso, Brazil", "place": "Mato Grosso, large mechanised farms", "lat": -12.62, "lon": -55.86, "irrigation": "none",
+    "current": { "crops": ["soybean", "maize"], "pattern": "double" },
+    "note": "Soybean then second-crop maize, then a long bare dry season." },
+  { "id": "bogura-bangladesh", "country": "BD", "name": "Bogura, Bangladesh", "place": "Northern Bangladesh, smallholder rice land", "lat": 24.92, "lon": 89.28, "irrigation": "limited", "floods": true,
+    "current": { "crops": ["rice", "wheat"], "pattern": "double" },
+    "note": "Monsoon rice, then a dry-season crop on stored water and some irrigation." },
+  { "id": "machakos-kenya", "country": "KE", "name": "Machakos, Kenya", "place": "Semi-arid eastern Kenya, two short rainy seasons", "lat": -1.62, "lon": 37.2, "irrigation": "none",
+    "current": { "crops": ["maize", "maize"], "pattern": "double" },
+    "note": "Smallholder maize in both rainy seasons, where the rains often fail." },
+  { "id": "ames-iowa-usa", "country": "US", "name": "Ames, Iowa, USA", "place": "US Corn Belt", "lat": 42.1, "lon": -93.6, "irrigation": "none",
+    "current": { "crops": ["maize", "soybean"], "pattern": "alternate" },
+    "note": "Maize one year and soybean the next, with bare soil through winter." },
+  { "id": "maradi-niger", "country": "NE", "name": "Maradi, Niger", "place": "Sahel, one short rainy season", "lat": 13.55, "lon": 7.3, "irrigation": "none",
+    "current": { "crops": ["millet"], "pattern": "single" },
+    "note": "Rainfed millet in one short, risky rainy season." },
+  { "id": "ludhiana-india", "country": "IN", "name": "Ludhiana, India", "place": "Punjab, irrigated rice and wheat", "lat": 30.95, "lon": 75.7, "irrigation": "full",
+    "current": { "crops": ["rice", "wheat"], "pattern": "double" },
+    "note": "Irrigated rice then wheat, on groundwater that is falling." },
+  { "id": "lilongwe-malawi", "country": "MW", "name": "Lilongwe, Malawi", "place": "Central Malawi, smallholder maize", "lat": -13.85, "lon": 33.6, "irrigation": "none",
+    "current": { "crops": ["maize"], "pattern": "single" },
+    "note": "Maize every year, in a region hit hard by El Nino droughts." }
+]

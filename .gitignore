@@ -1,0 +1,48 @@
+# What stays off GitHub: pitch materials, personal files, caches and rendered media.
+
+# Pitch materials (video, script, graphics) stay local
+presentation/
+
+# Original team photos and personal notes
+/*.png
+/*.jpg
+/*.jpeg
+/*.txt
+
+# Build helpers and scratch output
+prototype/
+__pycache__/
+*.pyc
+.venv/
+
+# Local data caches (the app only ships what it needs in app/data and app/fields)
+/data/
+.env
+
+# Editing projects, audio and rendered video
+*.mp4
+*.m4a
+*.mp3
+*.prproj
+*.prin
+Adobe Premiere Pro*/
+graphify-out/
+
+# Submission drafts for the team, and rendered demo files (the video goes to YouTube)
+submission/
+demo/video/
+demo/slides/
+demo/.cache/
+# Only the screenshots the slides and video use
+demo/shots/*
+!demo/shots/strip-*.png
+!demo/shots/phone-step*.png
+!demo/shots/phone-rank.png
+!demo/shots/laptop-rank.png
+!demo/shots/laptop-trust.png
+!demo/shots/laptop-replay-full.png
+demo/Audio/
+!demo/shots/phone-rank-bn.png
+!demo/shots/laptop-rank-full.png
+!demo/shots/laptop-simulate-full.png
+.graphifyignore

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sky2Root: video thumbnail</title>
+<!-- YouTube thumbnail, 1280 x 720. Rendered by tools/render_thumbnail.py. -->
+<style>
+@font-face { font-family: "Archivo"; src: url("../app/css/archivo-latin.woff2") format("woff2"); font-weight: 600 800; font-stretch: 100% 125%; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { width: 1280px; height: 720px; overflow: hidden; background: linear-gradient(135deg, #0b4a32 0%, #12694a 60%, #1c7d58 100%); color: #fff; font-family: "Segoe UI", system-ui, sans-serif; position: relative; }
+.left { position: absolute; left: 64px; top: 70px; width: 760px; }
+.brand { display: flex; align-items: center; gap: 16px; }
+.brand svg { width: 104px; height: 104px; }
+.brand b { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 118px; letter-spacing: -.02em; line-height: 1; }
+h1 { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 60px; line-height: 1.08; margin-top: 36px; }
+h1 em { font-style: normal; color: #9be3bd; }
+.chip { display: inline-block; margin-top: 40px; padding: 12px 24px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.3); font-size: 28px; font-weight: 600; }
+.phone { position: absolute; right: 70px; top: 46px; width: 300px; height: 650px; border: 10px solid #0b2a1d; border-radius: 46px; overflow: hidden; background: #fff; box-shadow: 0 24px 60px rgba(0,0,0,.4); transform: rotate(4deg); }
+.phone img { width: 100%; display: block; }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="brand"><svg viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="7" r="5" fill="#4c9be8"/>
+      <path d="M24 13 V25" stroke="#4c9be8" stroke-width="2.4" stroke-dasharray="2.5 2.5"/>
+      <path d="M24 25 C 18 22 15 17 16 13 C 21 14 24 19 24 25 Z" fill="#3fae76"/>
+      <path d="M24 25 C 29 21 33 18 34 13 C 28 13 25 18 24 25 Z" fill="#6cc797"/>
+      <path d="M8 26 H40" stroke="#7a5233" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M24 26 V36 M24 31 L18 38 M24 33 L30 41 M24 36 L21 44 M18 38 L14 40 M30 41 L34 42" stroke="#a8794f" stroke-width="2" stroke-linecap="round" fill="none"/>
+    </svg><b>Sky2Root</b></div>
+    <h1>Test-drive your crop rotation on <em>40 years of NASA data</em></h1>
+    <div class="chip">Team Groot · NASA Space Apps 2026</div>
+  </div>
+  <div class="phone"><img src="shots/phone-rank.png" alt=""></div>
+</body>
+</html>

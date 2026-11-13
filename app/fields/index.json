@@ -1,0 +1,58 @@
+[
+ {
+  "id": "sorriso-brazil",
+  "name": "Sorriso, Brazil",
+  "place": "Mato Grosso, large mechanised farms",
+  "lat": -12.62,
+  "lon": -55.86,
+  "note": "Soybean then second-crop maize, then a long bare dry season."
+ },
+ {
+  "id": "bogura-bangladesh",
+  "name": "Bogura, Bangladesh",
+  "place": "Northern Bangladesh, smallholder rice land",
+  "lat": 24.92,
+  "lon": 89.28,
+  "note": "Monsoon rice, then a dry-season crop on stored water and some irrigation."
+ },
+ {
+  "id": "machakos-kenya",
+  "name": "Machakos, Kenya",
+  "place": "Semi-arid eastern Kenya, two short rainy seasons",
+  "lat": -1.62,
+  "lon": 37.2,
+  "note": "Smallholder maize in both rainy seasons, where the rains often fail."
+ },
+ {
+  "id": "ames-iowa-usa",
+  "name": "Ames, Iowa, USA",
+  "place": "US Corn Belt",
+  "lat": 42.1,
+  "lon": -93.6,
+  "note": "Maize one year and soybean the next, with bare soil through winter."
+ },
+ {
+  "id": "maradi-niger",
+  "name": "Maradi, Niger",
+  "place": "Sahel, one short rainy season",
+  "lat": 13.55,
+  "lon": 7.3,
+  "note": "Rainfed millet in one short, risky rainy season."
+ },
+ {
+  "id": "ludhiana-india",
+  "name": "Ludhiana, India",
+  "place": "Punjab, irrigated rice and wheat",
+  "lat": 30.95,
+  "lon": 75.7,
+  "note": "Irrigated rice then wheat, on groundwater that is falling."
+ },
+ {
+  "id": "lilongwe-malawi",
+  "name": "Lilongwe, Malawi",
+  "place": "Central Malawi, smallholder maize",
+  "lat": -13.85,
+  "lon": 33.6,
+  "note": "Maize every year, in a region hit hard by El Nino droughts."
+ }
+]
